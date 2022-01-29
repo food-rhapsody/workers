@@ -1,0 +1,29 @@
+{
+  "name": "@devops/deploy-cli",
+  "private": true,
+  "main": "dist/index.js",
+  "module": "esm/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "fr-deploy-cli": "bin/index"
+  },
+  "scripts": {
+    "build": "concurrently \"tsc -p tsconfig.build.json\" \"tsc -p tsconfig.esm.json\"",
+    "lint": "eslint 'src/**/*.ts'",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@iarna/toml": "^2.2.5",
+    "@types/node": "^17.0.8",
+    "clipanion": "^3.2.0-rc.5",
+    "execa": "^5.1.1",
+    "ts-node": "^10.4.0",
+    "typanion": "^3.7.1",
+    "typescript": "^4.5.4"
+  },
+  "devDependencies": {
+    "@types/eslint": "^8",
+    "concurrently": "^7.0.0",
+    "eslint": "^8.7.0"
+  }
+}
