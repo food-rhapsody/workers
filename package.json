@@ -6,6 +6,8 @@
     "url": "git@github.com:food-rhapsody/workers"
   },
   "workspaces": [
+    "auth",
+    "shared",
     "devops/*"
   ],
   "packageManager": "yarn@3.1.1",
