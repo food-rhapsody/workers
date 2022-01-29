@@ -2468,6 +2468,14 @@ __metadata:
   languageName: node
   linkType: hard
 
+"users@workspace:users":
+  version: 0.0.0-use.local
+  resolution: "users@workspace:users"
+  dependencies:
+    "@devops/deploy-cli": "workspace:^"
+  languageName: unknown
+  linkType: soft
+
 "v8-compile-cache@npm:^2.0.3":
   version: 2.3.0
   resolution: "v8-compile-cache@npm:2.3.0"

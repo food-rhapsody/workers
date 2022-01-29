@@ -1,0 +1,26 @@
+name = "users"
+type = "javascript"
+workers_dev = true
+compatibility_date = "2022-01-16"
+kv_namespaces = [
+  { binding = "USERS", id = "ba7012a464ad421b8d1b7e7ac4280f7b", preview_id = "debfde955adf402094ad4fbdcbd845cc" }
+]
+vars = { VERSION = "unknown" }
+
+[build]
+command = "cargo install -q worker-build && worker-build --release" # required
+
+[build.upload]
+dir    = "build/worker"
+format = "modules"
+main   = "./shim.mjs"
+
+[[build.upload.rules]]
+globs = ["**/*.wasm"]
+type  = "CompiledWasm"
+
+[env.test]
+name = "users-test"
+kv_namespaces = [
+  { binding = "USERS", id = "50a81a4086ac481199e472a4bc3daf95", preview_id = "debfde955adf402094ad4fbdcbd845cc" }
+]

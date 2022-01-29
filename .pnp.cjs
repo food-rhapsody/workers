@@ -33,6 +33,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       {
         "name": "shared",
         "reference": "workspace:shared"
+      },
+      {
+        "name": "users",
+        "reference": "workspace:users"
       }
     ],
     "enableTopLevelFallback": true,
@@ -41,7 +45,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@devops/deploy-cli", ["workspace:devops/deploy-cli"]],
       ["auth", ["workspace:auth"]],
       ["food-rhapsody-workers", ["workspace:."]],
-      ["shared", ["workspace:shared"]]
+      ["shared", ["workspace:shared"]],
+      ["users", ["workspace:users"]]
     ],
     "fallbackPool": [
     ],
@@ -3085,6 +3090,16 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["punycode", "npm:2.1.1"]
           ],
           "linkType": "HARD",
+        }]
+      ]],
+      ["users", [
+        ["workspace:users", {
+          "packageLocation": "./users/",
+          "packageDependencies": [
+            ["users", "workspace:users"],
+            ["@devops/deploy-cli", "workspace:devops/deploy-cli"]
+          ],
+          "linkType": "SOFT",
         }]
       ]],
       ["v8-compile-cache", [
