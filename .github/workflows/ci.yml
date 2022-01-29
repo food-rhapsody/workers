@@ -27,7 +27,5 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
-      - name: cargo check
-        uses: actions-rs/cargo@v1
-        with:
-          command: check
+      - name: test
+        run: yarn workspaces since run test $SINCE_FROM_REF --jobs=3

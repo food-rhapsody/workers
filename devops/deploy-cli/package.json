@@ -8,6 +8,7 @@
     "fr-deploy-cli": "bin/index"
   },
   "scripts": {
+    "test": "echo \"No Tests\"",
     "build": "concurrently \"tsc -p tsconfig.build.json\" \"tsc -p tsconfig.esm.json\"",
     "lint": "eslint 'src/**/*.ts'",
     "typecheck": "tsc --noEmit"

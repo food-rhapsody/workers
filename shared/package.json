@@ -1,3 +1,6 @@
 {
-  "name": "shared"
+  "name": "shared",
+  "scripts": {
+    "test": "cargo test"
+  }
 }
