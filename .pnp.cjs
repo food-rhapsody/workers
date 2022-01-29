@@ -29,6 +29,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       {
         "name": "@devops/deploy-cli",
         "reference": "workspace:devops/deploy-cli"
+      },
+      {
+        "name": "shared",
+        "reference": "workspace:shared"
       }
     ],
     "enableTopLevelFallback": true,
@@ -36,7 +40,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
     "fallbackExclusionList": [
       ["@devops/deploy-cli", ["workspace:devops/deploy-cli"]],
       ["auth", ["workspace:auth"]],
-      ["food-rhapsody-workers", ["workspace:."]]
+      ["food-rhapsody-workers", ["workspace:."]],
+      ["shared", ["workspace:shared"]]
     ],
     "fallbackPool": [
     ],
@@ -2355,6 +2360,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["lru-cache", "npm:6.0.0"]
           ],
           "linkType": "HARD",
+        }]
+      ]],
+      ["shared", [
+        ["workspace:shared", {
+          "packageLocation": "./shared/",
+          "packageDependencies": [
+            ["shared", "workspace:shared"]
+          ],
+          "linkType": "SOFT",
         }]
       ]],
       ["shebang-command", [
