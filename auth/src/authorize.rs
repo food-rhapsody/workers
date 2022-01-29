@@ -1,8 +1,18 @@
 use worker::*;
-use shared::users::User;
+use shared::users::{User, UsersStore};
 
-pub async fn authorize(req: Request, _: Env, ctx: RouteContext<()>) -> Result<User> {
-    panic!("Not implement yet!");
+pub async fn authorize(
+    req: Request,
+    ctx: RouteContext<()>
+) -> Result<Option<User>> {
+    let users_store = UsersStore::new(ctx);
+    let auth_header = match req.headers().get("Authorization")? {
+        Some(value) => value,
+        None => String::from(""),
+    };
+    let token = get_auth_token_from_header(&auth_header)?;
+
+    users_store.get_user_by_token(&token).await
 }
 
 pub fn get_auth_token_from_header(header: &str) -> Result<String> {
@@ -24,7 +34,7 @@ pub fn get_auth_token_from_header(header: &str) -> Result<String> {
 
 #[cfg(test)]
 mod authorize_tests {
-    use crate::authorize::get_auth_token_from_header;
+    use super::*;
 
     #[test]
     fn get_auth_token_from_header_토큰을_성공적으로_불러온다() {
