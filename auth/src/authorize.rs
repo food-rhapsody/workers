@@ -15,7 +15,7 @@ pub async fn authorize(
     users_store.get_user_by_token(&token).await
 }
 
-pub fn get_auth_token_from_header(header: &str) -> Result<String> {
+fn get_auth_token_from_header(header: &str) -> Result<String> {
     let chunks = header.split(" ").collect::<Vec<&str>>();
     let prefix = match chunks.get(0) {
         Some(value) => value,
@@ -33,11 +33,11 @@ pub fn get_auth_token_from_header(header: &str) -> Result<String> {
 }
 
 #[cfg(test)]
-mod authorize_tests {
+mod get_auth_token_from_header_tests {
     use super::*;
 
     #[test]
-    fn get_auth_token_from_header_토큰을_성공적으로_불러온다() {
+    fn should_get_auth_token() {
         let header = "Bearer my_token";
         let result = get_auth_token_from_header(header).unwrap();
 
@@ -45,7 +45,7 @@ mod authorize_tests {
     }
 
     #[test]
-    fn get_auth_token_from_header_prefix가_일치하지_않아_오류가_발생한다() {
+    fn should_err_when_prefix_is_not_matches() {
         let header = "Token my_token";
         let err = get_auth_token_from_header(header).unwrap_err();
 
@@ -53,7 +53,7 @@ mod authorize_tests {
     }
 
     #[test]
-    fn get_auth_token_from_header_빈문자열이라_오류가_발생한다() {
+    fn should_err_when_auth_header_is_empty_string() {
         let header = "";
         let err = get_auth_token_from_header(header).unwrap_err();
 
@@ -61,8 +61,8 @@ mod authorize_tests {
     }
 
     #[test]
-    fn get_auth_token_from_header_잘못된_값이라_오류가_발생한다() {
-        let header = "잘못된 인증 헤더";
+    fn should_err_when_auth_header_is_incorrect() {
+        let header = "Wrong authorization header";
         let err = get_auth_token_from_header(header).unwrap_err();
 
         assert_eq!(err.to_string(), "Unauthorized");
