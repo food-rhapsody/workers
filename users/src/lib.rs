@@ -1,7 +1,7 @@
 mod create_user;
 
-use serde_json::json;
 use worker::*;
+use shared::routes::{health_route, version_route};
 use shared::utils::set_panic_hook;
 
 #[event(fetch)]
@@ -10,11 +10,8 @@ pub async fn main(req: Request, env: Env) -> Result<Response> {
     set_panic_hook();
 
     router
-        .get("/health", |_, _| Response::ok("OK"))
-        .get("/version", |_, ctx| {
-            let version = ctx.var("VERSION")?.to_string();
-            Response::from_json(&json!({ "version": version }))
-        })
+        .get("/health", health_route)
+        .get("/version", version_route)
         .run(req, env)
         .await
 }
