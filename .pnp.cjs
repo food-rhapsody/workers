@@ -27,6 +27,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:auth"
       },
       {
+        "name": "challenges",
+        "reference": "workspace:challenges"
+      },
+      {
         "name": "@devops/deploy-cli",
         "reference": "workspace:devops/deploy-cli"
       },
@@ -44,6 +48,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
     "fallbackExclusionList": [
       ["@devops/deploy-cli", ["workspace:devops/deploy-cli"]],
       ["auth", ["workspace:auth"]],
+      ["challenges", ["workspace:challenges"]],
       ["food-rhapsody-workers", ["workspace:."]],
       ["shared", ["workspace:shared"]],
       ["users", ["workspace:users"]]
@@ -725,6 +730,16 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["supports-color", "npm:7.2.0"]
           ],
           "linkType": "HARD",
+        }]
+      ]],
+      ["challenges", [
+        ["workspace:challenges", {
+          "packageLocation": "./challenges/",
+          "packageDependencies": [
+            ["challenges", "workspace:challenges"],
+            ["@devops/deploy-cli", "workspace:devops/deploy-cli"]
+          ],
+          "linkType": "SOFT",
         }]
       ]],
       ["clean-stack", [

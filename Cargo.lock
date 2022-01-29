@@ -28,6 +28,7 @@ version = "0.0.0"
 dependencies = [
  "cfg-if 0.1.10",
  "console_error_panic_hook",
+ "getrandom",
  "jwt",
  "serde_json",
  "shared",
@@ -78,6 +79,19 @@ name = "cfg-if"
 version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "baf1de4339761588bc0619e3cbc0120ee582ebb74b53b4efbf79117bd2da40fd"
+
+[[package]]
+name = "challenges"
+version = "0.0.0"
+dependencies = [
+ "cfg-if 0.1.10",
+ "console_error_panic_hook",
+ "getrandom",
+ "serde",
+ "serde_json",
+ "shared",
+ "worker",
+]
 
 [[package]]
 name = "chrono"
@@ -266,8 +280,10 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "418d37c8b1d42553c93648be529cb70f920d3baf8ef469b74b9638df426e0b4c"
 dependencies = [
  "cfg-if 1.0.0",
+ "js-sys",
  "libc",
  "wasi",
+ "wasm-bindgen",
 ]
 
 [[package]]
@@ -701,6 +717,7 @@ dependencies = [
  "auth",
  "cfg-if 0.1.10",
  "console_error_panic_hook",
+ "getrandom",
  "serde",
  "serde_json",
  "shared",

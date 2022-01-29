@@ -498,6 +498,14 @@ __metadata:
   languageName: node
   linkType: hard
 
+"challenges@workspace:challenges":
+  version: 0.0.0-use.local
+  resolution: "challenges@workspace:challenges"
+  dependencies:
+    "@devops/deploy-cli": "workspace:^"
+  languageName: unknown
+  linkType: soft
+
 "clean-stack@npm:^2.0.0":
   version: 2.2.0
   resolution: "clean-stack@npm:2.2.0"

@@ -1,0 +1,12 @@
+{
+  "name": "challenges",
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "wrangler dev --port 5002",
+    "deploy": "fr-deployer-cli deploy",
+    "test": "cargo test"
+  },
+  "devDependencies": {
+    "@devops/deploy-cli": "workspace:^"
+  }
+}

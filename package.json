@@ -8,6 +8,7 @@
   "workspaces": [
     "auth",
     "users",
+    "challenges",
     "shared",
     "devops/*"
   ],
