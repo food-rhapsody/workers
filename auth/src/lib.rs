@@ -1,3 +1,5 @@
+pub mod authorize;
+
 use serde_json::json;
 use worker::*;
 use shared::utils::set_panic_hook;
