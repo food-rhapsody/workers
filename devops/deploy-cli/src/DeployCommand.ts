@@ -5,7 +5,9 @@ import { Env, envs, parseEnv } from './Env';
 import { getVersion } from './getVersion';
 import { readWranglerConfig, writeWranglerConfig } from './wranglerConfig';
 
-export class DeployerCommand extends Command {
+export class DeployCommand extends Command {
+  static paths = [['deploy']];
+
   readonly workingDir = Option.String('-w,--working-dir');
   readonly env = Option.String('-e,--env', {
     validator: isEnum(envs),
