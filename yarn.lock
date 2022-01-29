@@ -21,7 +21,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@devops/deploy-cli@workspace:devops/deploy-cli":
+"@devops/deploy-cli@workspace:^, @devops/deploy-cli@workspace:devops/deploy-cli":
   version: 0.0.0-use.local
   resolution: "@devops/deploy-cli@workspace:devops/deploy-cli"
   dependencies:
@@ -396,6 +396,14 @@ __metadata:
   checksum: 9cc6414b111abfc7717e39546e4887b1e5ec74df8f1618d83425deaa95752bf05d475d1d241253b4d88d4a01f8e1bc84845ad5b7cc2047f8db2f614512acd40e
   languageName: node
   linkType: hard
+
+"auth@workspace:auth":
+  version: 0.0.0-use.local
+  resolution: "auth@workspace:auth"
+  dependencies:
+    "@devops/deploy-cli": "workspace:^"
+  languageName: unknown
+  linkType: soft
 
 "balanced-match@npm:^1.0.0":
   version: 1.0.2
