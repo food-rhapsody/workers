@@ -1,0 +1,33 @@
+name: CI
+on: [pull_request]
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    if: "!contains(github.event.head_commit.message, '[skip ci]')"
+    steps:
+      - name: checkout base branch
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 100
+          ref: ${{ github.base_ref }}
+      - name: checkout current branch
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 100
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: configure
+        uses: ./.github/actions/configure
+      - name: use node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: 16
+      - name: run yarn install
+        run: yarn install --immutable --immutable-cache --check-cache
+      - name: install rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+      - name: cargo check
+        uses: actions-rs/cargo@v1
+        with:
+          command: check

@@ -1,0 +1,48 @@
+name: "live-deploy"
+on:
+  push:
+    branches:
+      - "main"
+jobs:
+  live-deploy:
+    runs-on: ubuntu-latest
+    if: "!contains(github.event.head_commit.message, '[skip ci]')"
+    steps:
+      - name: checkout branch
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.BOT_GITHUB_TOKEN }}
+      - name: configure
+        uses: ./.github/actions/configure
+      - name: use node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: 16
+      - name: install wrangler
+        run: npm i @cloudflare/wrangler -g
+      - name: run yarn install
+        run: yarn install --immutable --immutable-cache
+      - name: install rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+      - name: live deploy
+        run: |
+          yarn version apply --all
+          git add -A
+          git diff-index --quiet HEAD -- || SHOULD_COMMIT="yes"
+          
+          if [ -n "$SHOULD_COMMIT" ];
+            then
+              git commit -m "chore: Bump version [skip ci]"
+              yarn workspaces since run deploy $SINCE_FROM_REF
+              git push origin HEAD
+            else
+              echo "업데이트된 패키지가 없습니다.";
+          fi
+        env:
+          ENV: live
+          NODE_ENV: production
+          CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+          CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
