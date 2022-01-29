@@ -1,5 +1,7 @@
 use worker::*;
-use shared::users::*;
+
+use shared::users::{CreateUserDto, User};
+use shared::users_store::UsersStore;
 
 pub async fn create_user(ctx: RouteContext<()>, dto: &CreateUserDto) -> Result<User> {
     let users_store = UsersStore::new(ctx);

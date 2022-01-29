@@ -1,10 +1,9 @@
 use worker::*;
-use shared::users::{User, UsersStore};
 
-pub async fn authorize(
-    req: Request,
-    ctx: RouteContext<()>
-) -> Result<Option<User>> {
+use shared::users::User;
+use shared::users_store::UsersStore;
+
+pub async fn authorize(req: Request, ctx: RouteContext<()>) -> Result<Option<User>> {
     let users_store = UsersStore::new(ctx);
     let auth_header = match req.headers().get("Authorization")? {
         Some(value) => value,
@@ -19,16 +18,16 @@ fn get_auth_token_from_header(header: &str) -> Result<String> {
     let chunks = header.split(" ").collect::<Vec<&str>>();
     let prefix = match chunks.get(0) {
         Some(value) => value,
-        None => ""
+        None => "",
     };
     let token = match chunks.get(1) {
         Some(value) => value,
-        None => ""
+        None => "",
     };
 
     match &prefix[..] {
         "Bearer" => Ok(token.to_string()),
-        _ => Err(Error::from("Unauthorized"))
+        _ => Err(Error::from("Unauthorized")),
     }
 }
 
@@ -68,4 +67,3 @@ mod get_auth_token_from_header_tests {
         assert_eq!(err.to_string(), "Unauthorized");
     }
 }
-
