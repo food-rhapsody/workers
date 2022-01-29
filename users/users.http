@@ -1,0 +1,5 @@
+### /health
+GET http://127.0.0.1:5000/health
+
+### /version
+GET http://127.0.0.1:5000/version
