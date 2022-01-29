@@ -2,8 +2,8 @@
   "name": "auth",
   "version": "0.0.0",
   "scripts": {
-    "dev": "wrangler dev",
-    "deploy": "fr-deployer-cli deploy",
+    "dev": "wrangler dev --port 5001",
+    "deploy": "fr-deploy-cli deploy",
     "test": "cargo test"
   },
   "devDependencies": {
