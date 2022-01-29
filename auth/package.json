@@ -1,0 +1,12 @@
+{
+  "name": "auth",
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "foodrhapsody-deployer",
+    "test": "cargo test"
+  },
+  "devDependencies": {
+    "@devops/deploy-cli": "workspace:^"
+  }
+}
