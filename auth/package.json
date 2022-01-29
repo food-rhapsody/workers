@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "dev": "wrangler dev",
-    "deploy": "foodrhapsody-deployer",
+    "deploy": "fr-deployer-cli deploy",
     "test": "cargo test"
   },
   "devDependencies": {
