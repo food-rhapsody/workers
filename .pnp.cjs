@@ -23,15 +23,25 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:."
       },
       {
+        "name": "auth",
+        "reference": "workspace:auth"
+      },
+      {
         "name": "@devops/deploy-cli",
         "reference": "workspace:devops/deploy-cli"
+      },
+      {
+        "name": "shared",
+        "reference": "workspace:shared"
       }
     ],
     "enableTopLevelFallback": true,
     "ignorePatternData": "(^(?:\\.yarn\\/sdks(?:\\/(?!\\.{1,2}(?:\\/|$))(?:(?:(?!(?:^|\\/)\\.{1,2}(?:\\/|$)).)*?)|$))$)",
     "fallbackExclusionList": [
       ["@devops/deploy-cli", ["workspace:devops/deploy-cli"]],
-      ["food-rhapsody-workers", ["workspace:."]]
+      ["auth", ["workspace:auth"]],
+      ["food-rhapsody-workers", ["workspace:."]],
+      ["shared", ["workspace:shared"]]
     ],
     "fallbackPool": [
     ],
@@ -593,6 +603,16 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["es-abstract", "npm:1.19.1"]
           ],
           "linkType": "HARD",
+        }]
+      ]],
+      ["auth", [
+        ["workspace:auth", {
+          "packageLocation": "./auth/",
+          "packageDependencies": [
+            ["auth", "workspace:auth"],
+            ["@devops/deploy-cli", "workspace:devops/deploy-cli"]
+          ],
+          "linkType": "SOFT",
         }]
       ]],
       ["balanced-match", [
@@ -2340,6 +2360,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["lru-cache", "npm:6.0.0"]
           ],
           "linkType": "HARD",
+        }]
+      ]],
+      ["shared", [
+        ["workspace:shared", {
+          "packageLocation": "./shared/",
+          "packageDependencies": [
+            ["shared", "workspace:shared"]
+          ],
+          "linkType": "SOFT",
         }]
       ]],
       ["shebang-command", [
