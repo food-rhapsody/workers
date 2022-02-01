@@ -24,22 +24,15 @@ pub struct User {
     pub oauth_provider: String,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CreateUserData {
-    pub email: String,
-    pub name: Option<String>,
-    pub oauth_provider: String,
-}
-
 impl User {
-    pub fn new(data: &CreateUserData) -> User {
+    pub fn new(dto: &CreateUserDto) -> User {
         let id = uid!();
 
         User {
             id,
-            email: String::from(&data.email),
-            name: data.name.clone(),
-            oauth_provider: data.oauth_provider.clone(),
+            email: String::from(&dto.email),
+            name: dto.name.clone(),
+            oauth_provider: dto.oauth_provider.clone(),
         }
     }
 
@@ -53,21 +46,11 @@ impl User {
 }
 
 #[derive(Serialize, Deserialize)]
-struct CreateUserDto {
+pub struct CreateUserDto {
     pub email: String,
     pub name: Option<String>,
     pub oauth_token: String,
     pub oauth_provider: String,
-}
-
-impl CreateUserDto {
-    fn to_data(&self) -> CreateUserData {
-        CreateUserData {
-            email: self.email.clone(),
-            name: self.name.clone(),
-            oauth_provider: self.oauth_provider.clone(),
-        }
-    }
 }
 
 pub async fn create_user(users: &Users, mut req: Request) -> ApiResult<User> {
@@ -76,7 +59,7 @@ pub async fn create_user(users: &Users, mut req: Request) -> ApiResult<User> {
     let provider = OAuthProvider::from_str(&dto.oauth_provider)?;
     provider.verify_token(&dto.oauth_token).await?;
 
-    let user = User::new(&dto.to_data());
+    let user = User::new(&dto);
     users.save_user(&user).await?;
 
     Ok(user)
@@ -186,9 +169,10 @@ mod user_tests {
 
     #[test]
     fn should_create_user() {
-        let data = CreateUserData {
+        let data = CreateUserDto {
             email: "seokju.me@gmail.com".to_string(),
             name: Some("Seokju Na".to_string()),
+            oauth_token: "token".to_string(),
             oauth_provider: "kakao".to_string(),
         };
         let user = User::new(&data);
@@ -201,9 +185,10 @@ mod user_tests {
 
     #[test]
     fn should_create_user_with_none_name() {
-        let data = CreateUserData {
+        let data = CreateUserDto {
             email: "test@test.com".to_string(),
             name: None,
+            oauth_token: "token".to_string(),
             oauth_provider: "kakao".to_string(),
         };
         let user = User::new(&data);
