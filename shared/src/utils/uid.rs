@@ -1,16 +1,4 @@
-use cfg_if::cfg_if;
 use nanoid::nanoid;
-
-cfg_if! {
-    // https://github.com/rustwasm/console_error_panic_hook#readme
-    if #[cfg(feature = "console_error_panic_hook")] {
-        extern crate console_error_panic_hook;
-        pub use self::console_error_panic_hook::set_once as set_panic_hook;
-    } else {
-        #[inline]
-        pub fn set_panic_hook() {}
-    }
-}
 
 pub const DEFAULT_UID_CHARS: [char; 62] = [
     '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i',
@@ -27,13 +15,13 @@ pub fn create_uid(size: usize, chars: &Vec<char>) -> String {
 #[macro_export]
 macro_rules! uid {
     ($size: tt, $chars: expr) => {
-        $crate::utils::create_uid($size, $chars)
+        $crate::utils::uid::create_uid($size, $chars)
     };
     ($size: tt) => {
-        $crate::utils::create_uid($size, &$crate::utils::DEFAULT_UID_CHARS.to_vec())
+        $crate::utils::uid::create_uid($size, &$crate::utils::uid::DEFAULT_UID_CHARS.to_vec())
     };
     () => {
-        $crate::utils::create_uid(21, &$crate::utils::DEFAULT_UID_CHARS.to_vec())
+        $crate::utils::uid::create_uid(21, &$crate::utils::uid::DEFAULT_UID_CHARS.to_vec())
     };
 }
 
