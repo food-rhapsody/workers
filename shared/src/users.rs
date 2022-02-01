@@ -54,7 +54,7 @@ pub struct CreateUserDto {
 }
 
 pub async fn create_user(users: &Users, mut req: Request) -> ApiResult<User> {
-    let dto = req.parse_req_json::<CreateUserDto>().await?;
+    let dto = req.parse_json::<CreateUserDto>().await?;
 
     let provider = OAuthProvider::from_str(&dto.oauth_provider)?;
     provider.verify_token(&dto.oauth_token).await?;
