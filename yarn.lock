@@ -442,6 +442,7 @@ __metadata:
   resolution: "auth@workspace:auth"
   dependencies:
     "@devops/deploy-cli": "workspace:^"
+    shared: "workspace:^"
   languageName: unknown
   linkType: soft
 
@@ -503,6 +504,7 @@ __metadata:
   resolution: "challenges@workspace:challenges"
   dependencies:
     "@devops/deploy-cli": "workspace:^"
+    shared: "workspace:^"
   languageName: unknown
   linkType: soft
 
@@ -2094,7 +2096,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"shared@workspace:shared":
+"shared@workspace:^, shared@workspace:shared":
   version: 0.0.0-use.local
   resolution: "shared@workspace:shared"
   languageName: unknown
@@ -2481,6 +2483,7 @@ __metadata:
   resolution: "users@workspace:users"
   dependencies:
     "@devops/deploy-cli": "workspace:^"
+    shared: "workspace:^"
   languageName: unknown
   linkType: soft
 

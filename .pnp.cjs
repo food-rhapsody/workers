@@ -666,7 +666,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./auth/",
           "packageDependencies": [
             ["auth", "workspace:auth"],
-            ["@devops/deploy-cli", "workspace:devops/deploy-cli"]
+            ["@devops/deploy-cli", "workspace:devops/deploy-cli"],
+            ["shared", "workspace:shared"]
           ],
           "linkType": "SOFT",
         }]
@@ -737,7 +738,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./challenges/",
           "packageDependencies": [
             ["challenges", "workspace:challenges"],
-            ["@devops/deploy-cli", "workspace:devops/deploy-cli"]
+            ["@devops/deploy-cli", "workspace:devops/deploy-cli"],
+            ["shared", "workspace:shared"]
           ],
           "linkType": "SOFT",
         }]
@@ -3112,7 +3114,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./users/",
           "packageDependencies": [
             ["users", "workspace:users"],
-            ["@devops/deploy-cli", "workspace:devops/deploy-cli"]
+            ["@devops/deploy-cli", "workspace:devops/deploy-cli"],
+            ["shared", "workspace:shared"]
           ],
           "linkType": "SOFT",
         }]

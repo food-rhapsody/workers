@@ -6,6 +6,9 @@
     "deploy": "fr-deploy-cli deploy",
     "test": "cargo test"
   },
+  "dependencies": {
+    "shared": "workspace:^"
+  },
   "devDependencies": {
     "@devops/deploy-cli": "workspace:^"
   }
