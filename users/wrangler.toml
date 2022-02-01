@@ -5,6 +5,14 @@ compatibility_date = "2022-01-16"
 kv_namespaces = [
   { binding = "USERS", id = "ba7012a464ad421b8d1b7e7ac4280f7b", preview_id = "debfde955adf402094ad4fbdcbd845cc" }
 ]
+durable_objects.bindings = [
+  { name = "USERS", class_name = "Users" }
+]
+
+[[migrations]]
+tag = "v0" # Should be unique for each entry
+new_classes = ["Users"] # Array of new classes
+
 vars = { VERSION = "unknown" }
 
 [build]
