@@ -1,5 +1,7 @@
-use reqwest::header::{HeaderMap, HeaderValue};
-use reqwest::{Client, RequestBuilder, StatusCode};
+use worker::{
+    Fetch, Headers, Method, Request, RequestInit, Response as WorkerResponse,
+    Result as WorkerResult,
+};
 
 use crate::api_error::ApiError;
 use crate::api_result::ApiResult;
@@ -21,31 +23,29 @@ impl OAuthProvider {
     }
 
     pub async fn verify_token(&self, token: &str) -> ApiResult<()> {
-        let request = self.build_verifying_request(token);
-
-        match request.send().await {
-            Ok(response) => match response.status() {
-                StatusCode::OK => Ok(()),
+        match self.request_verify_token(token).await {
+            Ok(response) => match response.status_code() {
+                200 => Ok(()),
                 _ => Err(ApiError::InvalidOAuthToken),
             },
-            Err(_) => Err(ApiError::InvalidOAuthToken),
+            Err(e) => Err(ApiError::WorkerError { source: e }),
         }
     }
 
-    fn build_verifying_request(&self, token: &str) -> RequestBuilder {
+    async fn request_verify_token(&self, token: &str) -> WorkerResult<WorkerResponse> {
         match self {
             OAuthProvider::Kakao => {
                 let auth_header = format!("Bearer {}", token);
-                let auth_header_value = HeaderValue::from_str(&auth_header).unwrap();
 
-                let mut headers = HeaderMap::new();
-                headers.insert("Authorization", auth_header_value);
+                let mut req_headers = Headers::new();
+                req_headers.append("Authorization", &auth_header)?;
 
-                Client::builder()
-                    .default_headers(headers)
-                    .build()
-                    .unwrap()
-                    .get(KAKAO_USER_URL)
+                let mut req_init = RequestInit::new();
+                req_init.with_method(Method::Get).with_headers(req_headers);
+
+                let req = Request::new_with_init(KAKAO_USER_URL, &req_init)?;
+
+                Fetch::Request(req).send().await
             }
         }
     }
