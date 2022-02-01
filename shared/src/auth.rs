@@ -1,20 +1,7 @@
-use worker::*;
+use crate::api_error::ApiError;
+use crate::api_result::ApiResult;
 
-use shared::users::User;
-use shared::users_store::UsersStore;
-
-pub async fn authorize(req: Request, ctx: RouteContext<()>) -> Result<Option<User>> {
-    let users_store = UsersStore::new(ctx);
-    let auth_header = match req.headers().get("Authorization")? {
-        Some(value) => value,
-        None => String::from(""),
-    };
-    let token = get_auth_token_from_header(&auth_header)?;
-
-    users_store.get_user_by_token(&token).await
-}
-
-fn get_auth_token_from_header(header: &str) -> Result<String> {
+fn get_auth_token_from_header(header: &str) -> ApiResult<String> {
     let chunks = header.split(" ").collect::<Vec<&str>>();
     let prefix = match chunks.get(0) {
         Some(value) => value,
@@ -27,7 +14,7 @@ fn get_auth_token_from_header(header: &str) -> Result<String> {
 
     match &prefix[..] {
         "Bearer" => Ok(token.to_string()),
-        _ => Err(Error::from("Unauthorized")),
+        _ => Err(ApiError::Unauthorized),
     }
 }
 
@@ -48,7 +35,7 @@ mod get_auth_token_from_header_tests {
         let header = "Token my_token";
         let err = get_auth_token_from_header(header).unwrap_err();
 
-        assert_eq!(err.to_string(), "Unauthorized");
+        assert!(matches!(err, ApiError::Unauthorized));
     }
 
     #[test]
@@ -56,7 +43,7 @@ mod get_auth_token_from_header_tests {
         let header = "";
         let err = get_auth_token_from_header(header).unwrap_err();
 
-        assert_eq!(err.to_string(), "Unauthorized");
+        assert!(matches!(err, ApiError::Unauthorized));
     }
 
     #[test]
@@ -64,6 +51,6 @@ mod get_auth_token_from_header_tests {
         let header = "Wrong authorization header";
         let err = get_auth_token_from_header(header).unwrap_err();
 
-        assert_eq!(err.to_string(), "Unauthorized");
+        assert!(matches!(err, ApiError::Unauthorized));
     }
 }

@@ -1,12 +1,10 @@
 use worker::*;
 
 use shared::routes::{health_route, version_route};
-use shared::utils::set_panic_hook;
-
-pub mod authorize;
+use shared::utils::wasm::set_panic_hook;
 
 #[event(fetch)]
-pub async fn main(req: Request, env: Env) -> Result<Response> {
+pub async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
     let router = Router::new();
     set_panic_hook();
 

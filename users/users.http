@@ -1,5 +1,16 @@
-### /health
+### GET /health
 GET http://127.0.0.1:5000/health
 
-### /version
+### GET /version
 GET http://127.0.0.1:5000/version
+
+### POST /users
+### Create new user
+POST http://127.0.0.1:5000/users
+Content-Type: application/json
+
+{
+  "email": "seokju.me@kakao.com",
+  "oauth_provider": "kakao",
+  "oauth_token": "wrong"
+}
