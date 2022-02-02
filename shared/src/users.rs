@@ -5,6 +5,7 @@ use worker::*;
 
 use crate::api_error::ApiError;
 use crate::api_result::ApiResult;
+use crate::auth::authorize;
 use crate::jwt::Jwt;
 use crate::oauth::OAuthProvider;
 use crate::req::ParseReqJson;
@@ -50,7 +51,7 @@ impl User {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct UserClaims {
     #[serde(rename = "sub")]
-    subject: String,
+    pub subject: String,
 }
 
 impl UserClaims {
@@ -89,6 +90,12 @@ impl Users {
                 _ => Err(ApiError::WorkerError { source: e }),
             },
         }
+    }
+
+    pub fn get_jwt_secret(&self) -> ApiResult<String> {
+        let secret = self.env.secret("JWT_SECRET")?;
+
+        Ok(secret.to_string())
     }
 
     pub async fn find_user_by_id(&self, user_id: &str) -> ApiResult<Option<User>> {
@@ -138,7 +145,7 @@ impl Users {
     }
 
     pub async fn update_user_token(&self, user: &User) -> ApiResult<String> {
-        let secret = self.env.secret("JWT_SECRET").unwrap().to_string();
+        let secret = self.get_jwt_secret()?;
         let jwt = Jwt::new(&secret);
 
         let user_claims = UserClaims::from(user);
@@ -176,6 +183,20 @@ impl DurableObject for Users {
         let path = req.path();
 
         match method {
+            Method::Get => match &path[..] {
+                "/me" => match authorize(self, req).await {
+                    Ok(user) => {
+                        let body = json!({
+                            "id": user.id,
+                            "email": user.email
+                        });
+
+                        Response::from_json(&body)
+                    }
+                    Err(error) => Ok(error.to_response()),
+                },
+                _ => Response::error("not found", 404),
+            },
             Method::Post => match &path[..] {
                 "/users" => match create_user(self, req).await {
                     Ok((user, token)) => {
