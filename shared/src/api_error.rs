@@ -2,6 +2,8 @@ use serde_json::json;
 use worker::{Error as WorkerError, Response};
 use worker::kv::KvError;
 
+use crate::jwt::JwtError;
+
 #[derive(Debug, thiserror::Error)]
 pub enum ApiError {
     // users
@@ -35,6 +37,11 @@ pub enum ApiError {
         #[from]
         source: WorkerError,
     },
+    #[error("jwt error")]
+    JwtError {
+        #[from]
+        source: JwtError,
+    },
 }
 
 impl ApiError {
@@ -47,8 +54,7 @@ impl ApiError {
             ApiError::InvalidOAuthToken => "invalid oauth token",
             ApiError::BadRequest(message) => message,
             ApiError::ServerError(message) => message,
-            ApiError::KvError { source: _ } => "internal server error",
-            ApiError::WorkerError { source: _ } => "internal server error",
+            _ => "internal server error",
         };
         let status_code: u16 = match self {
             ApiError::UserNotExists => 404,
@@ -57,9 +63,7 @@ impl ApiError {
             ApiError::InvalidOAuthProvider => 400,
             ApiError::InvalidOAuthToken => 400,
             ApiError::BadRequest(_) => 400,
-            ApiError::ServerError(_) => 500,
-            ApiError::KvError { source: _ } => 500,
-            ApiError::WorkerError { source: _ } => 500,
+            _ => 500,
         };
 
         let body = json!({ "message": message });
