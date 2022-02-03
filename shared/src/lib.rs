@@ -1,6 +1,7 @@
 pub mod api_error;
 pub mod api_result;
 pub mod auth;
+pub mod challenges;
 pub mod jwt;
 pub mod oauth;
 pub mod req;
