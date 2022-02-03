@@ -1,5 +1,8 @@
-### /health
+### GET /health
 GET http://127.0.0.1:5002/health
 
-### /version
+### GET /version
 GET http://127.0.0.1:5002/version
+
+### GET /challenges
+GET http://127.0.0.1:5002/challenges

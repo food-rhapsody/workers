@@ -8,9 +8,17 @@ pub async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
     let router = Router::new();
     set_panic_hook();
 
+    let request_to_challenges = |_req: Request, ctx: RouteContext<()>| async move {
+        let namespace = ctx.durable_object("CHALLENGES")?;
+        let stub = namespace.id_from_name("CHALLENGES")?.get_stub()?;
+
+        stub.fetch_with_request(_req).await
+    };
+
     router
         .get("/health", health_route)
         .get("/version", version_route)
+        .get_async("/challenges", request_to_challenges)
         .run(req, env)
         .await
 }
