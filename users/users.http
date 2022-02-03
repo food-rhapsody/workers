@@ -14,3 +14,8 @@ Content-Type: application/json
   "oauth_provider": "kakao",
   "oauth_token": "wrong"
 }
+
+### GET /me
+### Authorize me
+GET http://127.0.0.1:5000/me
+Authorization: Bearer some_token
