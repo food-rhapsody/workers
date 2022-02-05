@@ -12,10 +12,16 @@ Content-Type: application/json
 {
   "email": "seokju.me@kakao.com",
   "oauth_provider": "kakao",
-  "oauth_token": "wrong"
+  "oauth_token": "..."
 }
 
 ### GET /me
 ### Authorize me
 GET http://127.0.0.1:5000/me
-Authorization: Bearer some_token
+Authorization: Bearer ...
+
+### POST /me/token
+### Refresh my token
+POST http://127.0.0.1:5000/me/token
+Content-Type: application/json
+Authorization: Bearer ...

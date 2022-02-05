@@ -20,6 +20,7 @@ pub async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
         .get("/version", version_route)
         .post_async("/users", request_to_users)
         .get_async("/me", request_to_users)
+        .post_async("/me/token", request_to_users)
         .run(req, env)
         .await
 }
