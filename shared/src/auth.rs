@@ -2,44 +2,59 @@ use worker::Request;
 
 use crate::api_error::ApiError;
 use crate::api_result::ApiResult;
-use crate::jwt::Jwt;
 use crate::users::{User, UserClaims, Users};
 
-pub async fn authorize(users: &Users, req: Request) -> ApiResult<User> {
+pub async fn authorize_access_token(users: &Users, req: Request) -> ApiResult<User> {
     let auth_header = req.headers().get("Authorization")?.unwrap_or("".to_owned());
     let token_str = get_auth_token_from_header(&auth_header)?;
 
-    let secret = users.get_jwt_secret()?;
-    let jwt = Jwt::new(&secret);
+    let jwt = users.get_jwt_for_access_token()?;
     let token = jwt.verify::<UserClaims>(&token_str);
+    if let Err(_) = token {
+        return Err(ApiError::Unauthorized);
+    }
 
-    match token {
-        Ok(x) => match users.get_user_by_id(&x.claims().custom.subject).await {
-            Ok(user) => Ok(user),
-            Err(_) => Err(ApiError::Unauthorized),
-        },
-        Err(_) => Err(ApiError::Unauthorized),
+    let user = users
+        .get_user_by_id(&token.unwrap().claims().custom.subject)
+        .await;
+    if let Err(_) = user {
+        return Err(ApiError::Unauthorized);
+    }
+
+    let user = user.unwrap();
+    let access_token = user.access_token.clone().unwrap_or("NOOP".to_string());
+
+    if access_token.eq(&token_str) {
+        Ok(user)
+    } else {
+        Err(ApiError::Unauthorized)
     }
 }
 
-pub async fn optional_authorize(users: &Users, req: Request) -> ApiResult<Option<User>> {
+pub async fn authorize_refresh_token(users: &Users, req: Request) -> ApiResult<User> {
     let auth_header = req.headers().get("Authorization")?.unwrap_or("".to_owned());
-    let token_str = get_auth_token_from_header(&auth_header);
-    if let Err(_) = token_str {
-        return Ok(None);
+    let token_str = get_auth_token_from_header(&auth_header)?;
+
+    let jwt = users.get_jwt_for_refresh_token()?;
+    let token = jwt.verify::<UserClaims>(&token_str);
+    if let Err(_) = token {
+        return Err(ApiError::Unauthorized);
     }
 
-    let secret = users.get_jwt_secret()?;
-    let jwt = Jwt::new(&secret);
-    let token = jwt.verify::<UserClaims>(&token_str.unwrap());
+    let user = users
+        .get_user_by_refresh_id(&token.unwrap().claims().custom.subject)
+        .await;
+    if let Err(_) = user {
+        return Err(ApiError::Unauthorized);
+    }
 
-    match token {
-        Ok(x) => {
-            let user = users.get_user_by_id(&x.claims().custom.subject).await?;
+    let user = user.unwrap();
+    let refresh_token = user.refresh_token.clone().unwrap_or("NOOP".to_string());
 
-            Ok(Some(user))
-        }
-        Err(_) => Ok(None),
+    if refresh_token.eq(&token_str) {
+        Ok(user)
+    } else {
+        Err(ApiError::Unauthorized)
     }
 }
 
