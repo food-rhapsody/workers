@@ -23,7 +23,7 @@ pub struct Jwt {
 
 impl Jwt {
     pub fn new(secret: &str) -> Self {
-        Jwt {
+        Self {
             secret: secret.to_string().into_bytes(),
         }
     }
