@@ -23,10 +23,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:."
       },
       {
-        "name": "auth",
-        "reference": "workspace:auth"
-      },
-      {
         "name": "challenges",
         "reference": "workspace:challenges"
       },
@@ -51,7 +47,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
     "ignorePatternData": "(^(?:\\.yarn\\/sdks(?:\\/(?!\\.{1,2}(?:\\/|$))(?:(?:(?!(?:^|\\/)\\.{1,2}(?:\\/|$)).)*?)|$))$)",
     "fallbackExclusionList": [
       ["@devops/deploy-cli", ["workspace:devops/deploy-cli"]],
-      ["auth", ["workspace:auth"]],
       ["challenges", ["workspace:challenges"]],
       ["food-rhapsody-workers", ["workspace:."]],
       ["place", ["workspace:place"]],
@@ -664,17 +659,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["astral-regex", "npm:2.0.0"]
           ],
           "linkType": "HARD",
-        }]
-      ]],
-      ["auth", [
-        ["workspace:auth", {
-          "packageLocation": "./auth/",
-          "packageDependencies": [
-            ["auth", "workspace:auth"],
-            ["@devops/deploy-cli", "workspace:devops/deploy-cli"],
-            ["shared", "workspace:shared"]
-          ],
-          "linkType": "SOFT",
         }]
       ]],
       ["balanced-match", [
