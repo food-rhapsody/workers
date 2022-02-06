@@ -1,0 +1,37 @@
+name = "api"
+type = "javascript"
+workers_dev = true
+compatibility_date = "2022-01-16"
+kv_namespaces = [
+  { binding = "PLACE", id = "4b97b756d7514968bff5fdf22bed71c6", preview_id = "b6e89114807a4192875c58c24a312463" }
+]
+durable_objects.bindings = [
+  { name = "USERS", class_name = "Users" },
+  { name = "CHALLENGES", class_name = "Challenges" }
+]
+vars = { VERSION = "unknown", ENV = "local" }
+
+[[migrations]]
+tag = "v0"
+new_classes = ["Users", "Challenges"]
+
+[build]
+command = "cargo install -q worker-build && worker-build --release" # required
+
+[build.upload]
+dir = "build/worker"
+format = "modules"
+main = "./shim.mjs"
+
+[[build.upload.rules]]
+globs = ["**/*.wasm"]
+type = "CompiledWasm"
+
+[env.test]
+kv_namespaces = [
+  { binding = "PLACE", id = "e6976cf4ec904160b2af5e6da096c3ee", preview_id = "b6e89114807a4192875c58c24a312463" }
+]
+durable_objects.bindings = [
+  { name = "USERS", class_name = "Users" },
+  { name = "CHALLENGES", class_name = "Challenges" },
+]

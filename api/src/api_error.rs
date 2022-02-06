@@ -20,6 +20,10 @@ pub enum ApiError {
     #[error("invalid oauth token")]
     InvalidOAuthToken,
 
+    // challenges
+    #[error("challenge not exists")]
+    ChallengeNotExists,
+
     // general
     #[error("bad request: {0}")]
     BadRequest(String),
@@ -52,6 +56,7 @@ impl ApiError {
             ApiError::Unauthorized => "unauthorized",
             ApiError::InvalidOAuthProvider => "invalid oauth provider",
             ApiError::InvalidOAuthToken => "invalid oauth token",
+            ApiError::ChallengeNotExists => "challenge not exists",
             ApiError::BadRequest(message) => message,
             ApiError::ServerError(message) => message,
             _ => "internal server error",
@@ -62,6 +67,7 @@ impl ApiError {
             ApiError::Unauthorized => 401,
             ApiError::InvalidOAuthProvider => 400,
             ApiError::InvalidOAuthToken => 400,
+            ApiError::ChallengeNotExists => 404,
             ApiError::BadRequest(_) => 400,
             _ => 500,
         };

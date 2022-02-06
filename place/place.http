@@ -1,8 +1,0 @@
-### GET /health
-GET http://127.0.0.1:5003/health
-
-### GET /version
-GET http://127.0.0.1:5003/version
-
-### POST /search
-POST http://127.0.0.1:5003/search?query=키친마이야르

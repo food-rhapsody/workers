@@ -1,0 +1,43 @@
+### GET /health
+GET http://localhost:4200/health
+
+### GET /version
+GET http://localhost:4200/version
+
+### GET /challenges
+GET http://localhost:4200/challenges
+
+### POST /challenges
+POST http://localhost:4200/challenges
+Content-Type: application/json
+Authorization: Bearer ...
+
+{
+  "name": "한우",
+  "stamps": [
+    {
+      "id": "ribeye_roll",
+      "title": "등심",
+      "description": "육즙 가득",
+      "img_url": ""
+    }
+  ]
+}
+
+### POST /users
+POST http://localhost:4200/users
+Content-Type: application/json
+
+{
+  "email": "seokju.me@kakao.com",
+  "oauth_provider": "kakao",
+  "oauth_token": "..."
+}
+
+### GET /me
+GET http://localhost:4200/me
+Authorization: Bearer ...
+
+### POST /me/token
+POST http://localhost:4200/me/token
+Authorization: Bearer ...
