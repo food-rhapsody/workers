@@ -437,15 +437,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"auth@workspace:auth":
-  version: 0.0.0-use.local
-  resolution: "auth@workspace:auth"
-  dependencies:
-    "@devops/deploy-cli": "workspace:^"
-    shared: "workspace:^"
-  languageName: unknown
-  linkType: soft
-
 "balanced-match@npm:^1.0.0":
   version: 1.0.2
   resolution: "balanced-match@npm:1.0.2"
