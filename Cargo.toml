@@ -1,7 +1,4 @@
 [workspace]
 members = [
-  "users",
-  "challenges",
-  "place",
-  "shared"
+  "api"
 ]

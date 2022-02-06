@@ -22,6 +22,7 @@ impl OAuthProvider {
         }
     }
 
+    // TODO: check email
     pub async fn verify_token(&self, token: &str) -> ApiResult<()> {
         match self.request_verify_token(token).await {
             Ok(response) => match response.status_code() {

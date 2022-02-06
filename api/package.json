@@ -1,13 +1,10 @@
 {
-  "name": "users",
+  "name": "@foodrhapsody/api",
   "version": "0.0.0",
   "scripts": {
-    "dev": "wrangler dev --port 5000",
+    "dev": "wrangler dev --port 4200",
     "deploy": "fr-deploy-cli deploy",
     "test": "cargo test"
-  },
-  "dependencies": {
-    "shared": "workspace:^"
   },
   "devDependencies": {
     "@devops/deploy-cli": "workspace:^"

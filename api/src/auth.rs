@@ -1,4 +1,6 @@
-use worker::Request;
+use std::str::FromStr;
+
+use worker::{console_log, Headers, Method, Request, RequestInit, Result as WorkerResult, Url};
 
 use crate::api_error::ApiError;
 use crate::api_result::ApiResult;
@@ -56,6 +58,22 @@ pub async fn authorize_refresh_token(users: &Users, req: Request) -> ApiResult<U
     } else {
         Err(ApiError::Unauthorized)
     }
+}
+
+pub fn build_admin_auth_req(req: &Request) -> WorkerResult<Request> {
+    let auth = req.headers().get("Authorization")?.unwrap_or("".to_owned());
+    let mut headers = Headers::new();
+    headers.append("Authorization", &auth)?;
+
+    let mut init = RequestInit::new();
+    init.with_headers(headers).with_method(Method::Get);
+
+    let mut url = Url::from_str(req.url()?.as_str())?;
+    url.set_path("/me/admin");
+
+    let admin_auth_req = Request::new_with_init(url.as_str(), &init)?;
+
+    Ok(admin_auth_req)
 }
 
 fn get_auth_token_from_header(header: &str) -> ApiResult<String> {

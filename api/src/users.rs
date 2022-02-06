@@ -11,6 +11,8 @@ use crate::oauth::OAuthProvider;
 use crate::req::ParseReqJson;
 use crate::uid;
 
+const ADMIN_EMAILS: [&str; 1] = ["seokju.me@kakao.com"];
+
 pub fn user_id_key(id: &str) -> String {
     format!("id_{}", id)
 }
@@ -41,6 +43,10 @@ impl User {
             access_token: None,
             refresh_token: None,
         }
+    }
+
+    pub fn is_admin(&self) -> bool {
+        ADMIN_EMAILS.iter().any(|x| x == &self.email.as_str())
     }
 
     pub fn id_key(&self) -> String {
@@ -285,7 +291,17 @@ impl DurableObject for Users {
 
                         Response::from_json(&body)
                     }
-                    Err(error) => Ok(error.to_response()),
+                    Err(e) => Ok(e.to_response()),
+                },
+                "/me/admin" => match recognize_me(self, req).await {
+                    Ok(user) => match user.is_admin() {
+                        true => Response::from_json(&json!({
+                            "id": user.id,
+                            "email": user.email,
+                        })),
+                        false => Ok(ApiError::Unauthorized.to_response()),
+                    },
+                    Err(e) => Ok(e.to_response()),
                 },
                 _ => Response::error("not found", 404),
             },
@@ -300,7 +316,7 @@ impl DurableObject for Users {
 
                         Response::from_json(&body)
                     }
-                    Err(error) => Ok(error.to_response()),
+                    Err(e) => Ok(e.to_response()),
                 },
                 "/me/token" => match update_my_token(self, req).await {
                     Ok(user) => {
@@ -312,7 +328,7 @@ impl DurableObject for Users {
 
                         Response::from_json(&body)
                     }
-                    Err(error) => Ok(error.to_response()),
+                    Err(e) => Ok(e.to_response()),
                 },
                 _ => Response::error("not found", 404),
             },
