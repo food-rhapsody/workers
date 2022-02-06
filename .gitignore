@@ -15,3 +15,5 @@
 !.yarn/versions
 
 cloudflare.http
+admin.json
+admin.http
