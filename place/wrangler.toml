@@ -21,3 +21,6 @@ type = "CompiledWasm"
 
 [env.test]
 name = "place-test"
+kv_namespaces = [
+  { binding = "PLACE", id = "f1c0a966e790467aa6113aa5b5ace607", preview_id = "c766100dcef8446dbf1be8a0af99f16a" }
+]
