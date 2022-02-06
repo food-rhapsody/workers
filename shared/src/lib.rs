@@ -4,6 +4,7 @@ pub mod auth;
 pub mod challenges;
 pub mod jwt;
 pub mod oauth;
+pub mod place;
 pub mod req;
 pub mod routes;
 pub mod users;
