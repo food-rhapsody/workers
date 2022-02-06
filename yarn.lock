@@ -57,6 +57,14 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@foodrhapsody/api@workspace:api":
+  version: 0.0.0-use.local
+  resolution: "@foodrhapsody/api@workspace:api"
+  dependencies:
+    "@devops/deploy-cli": "workspace:^"
+  languageName: unknown
+  linkType: soft
+
 "@humanwhocodes/config-array@npm:^0.9.2":
   version: 0.9.3
   resolution: "@humanwhocodes/config-array@npm:0.9.3"
@@ -489,15 +497,6 @@ __metadata:
   checksum: fe75c9d5c76a7a98d45495b91b2172fa3b7a09e0cc9370e5c8feb1c567b85c4288e2b3fded7cfdd7359ac28d6b3844feb8b82b8686842e93d23c827c417e83fc
   languageName: node
   linkType: hard
-
-"challenges@workspace:challenges":
-  version: 0.0.0-use.local
-  resolution: "challenges@workspace:challenges"
-  dependencies:
-    "@devops/deploy-cli": "workspace:^"
-    shared: "workspace:^"
-  languageName: unknown
-  linkType: soft
 
 "clean-stack@npm:^2.0.0":
   version: 2.2.0
@@ -1928,15 +1927,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"place@workspace:place":
-  version: 0.0.0-use.local
-  resolution: "place@workspace:place"
-  dependencies:
-    "@devops/deploy-cli": "workspace:^"
-    shared: "workspace:^"
-  languageName: unknown
-  linkType: soft
-
 "prelude-ls@npm:^1.2.1":
   version: 1.2.1
   resolution: "prelude-ls@npm:1.2.1"
@@ -2095,12 +2085,6 @@ __metadata:
   checksum: 5eafe6102bea2a7439897c1856362e31cc348ccf96efd455c8b5bc2c61e6f7e7b8250dc26b8828c1d76a56f818a7ee907a36ae9fb37a599d3d24609207001d60
   languageName: node
   linkType: hard
-
-"shared@workspace:^, shared@workspace:shared":
-  version: 0.0.0-use.local
-  resolution: "shared@workspace:shared"
-  languageName: unknown
-  linkType: soft
 
 "shebang-command@npm:^2.0.0":
   version: 2.0.0
@@ -2477,15 +2461,6 @@ __metadata:
   checksum: 7167432de6817fe8e9e0c9684f1d2de2bb688c94388f7569f7dbdb1587c9f4ca2a77962f134ec90be0cc4d004c939ff0d05acc9f34a0db39a3c797dada262633
   languageName: node
   linkType: hard
-
-"users@workspace:users":
-  version: 0.0.0-use.local
-  resolution: "users@workspace:users"
-  dependencies:
-    "@devops/deploy-cli": "workspace:^"
-    shared: "workspace:^"
-  languageName: unknown
-  linkType: soft
 
 "v8-compile-cache@npm:^2.0.3":
   version: 2.3.0

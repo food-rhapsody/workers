@@ -23,35 +23,20 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:."
       },
       {
-        "name": "challenges",
-        "reference": "workspace:challenges"
+        "name": "@foodrhapsody/api",
+        "reference": "workspace:api"
       },
       {
         "name": "@devops/deploy-cli",
         "reference": "workspace:devops/deploy-cli"
-      },
-      {
-        "name": "place",
-        "reference": "workspace:place"
-      },
-      {
-        "name": "shared",
-        "reference": "workspace:shared"
-      },
-      {
-        "name": "users",
-        "reference": "workspace:users"
       }
     ],
     "enableTopLevelFallback": true,
     "ignorePatternData": "(^(?:\\.yarn\\/sdks(?:\\/(?!\\.{1,2}(?:\\/|$))(?:(?:(?!(?:^|\\/)\\.{1,2}(?:\\/|$)).)*?)|$))$)",
     "fallbackExclusionList": [
       ["@devops/deploy-cli", ["workspace:devops/deploy-cli"]],
-      ["challenges", ["workspace:challenges"]],
-      ["food-rhapsody-workers", ["workspace:."]],
-      ["place", ["workspace:place"]],
-      ["shared", ["workspace:shared"]],
-      ["users", ["workspace:users"]]
+      ["@foodrhapsody/api", ["workspace:api"]],
+      ["food-rhapsody-workers", ["workspace:."]]
     ],
     "fallbackPool": [
     ],
@@ -131,6 +116,16 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["strip-json-comments", "npm:3.1.1"]
           ],
           "linkType": "HARD",
+        }]
+      ]],
+      ["@foodrhapsody/api", [
+        ["workspace:api", {
+          "packageLocation": "./api/",
+          "packageDependencies": [
+            ["@foodrhapsody/api", "workspace:api"],
+            ["@devops/deploy-cli", "workspace:devops/deploy-cli"]
+          ],
+          "linkType": "SOFT",
         }]
       ]],
       ["@humanwhocodes/config-array", [
@@ -720,17 +715,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["supports-color", "npm:7.2.0"]
           ],
           "linkType": "HARD",
-        }]
-      ]],
-      ["challenges", [
-        ["workspace:challenges", {
-          "packageLocation": "./challenges/",
-          "packageDependencies": [
-            ["challenges", "workspace:challenges"],
-            ["@devops/deploy-cli", "workspace:devops/deploy-cli"],
-            ["shared", "workspace:shared"]
-          ],
-          "linkType": "SOFT",
         }]
       ]],
       ["clean-stack", [
@@ -2492,17 +2476,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD",
         }]
       ]],
-      ["place", [
-        ["workspace:place", {
-          "packageLocation": "./place/",
-          "packageDependencies": [
-            ["place", "workspace:place"],
-            ["@devops/deploy-cli", "workspace:devops/deploy-cli"],
-            ["shared", "workspace:shared"]
-          ],
-          "linkType": "SOFT",
-        }]
-      ]],
       ["prelude-ls", [
         ["npm:1.2.1", {
           "packageLocation": "./.yarn/cache/prelude-ls-npm-1.2.1-3e4d272a55-cd192ec0d0.zip/node_modules/prelude-ls/",
@@ -2663,15 +2636,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["lru-cache", "npm:6.0.0"]
           ],
           "linkType": "HARD",
-        }]
-      ]],
-      ["shared", [
-        ["workspace:shared", {
-          "packageLocation": "./shared/",
-          "packageDependencies": [
-            ["shared", "workspace:shared"]
-          ],
-          "linkType": "SOFT",
         }]
       ]],
       ["shebang-command", [
@@ -3107,17 +3071,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["punycode", "npm:2.1.1"]
           ],
           "linkType": "HARD",
-        }]
-      ]],
-      ["users", [
-        ["workspace:users", {
-          "packageLocation": "./users/",
-          "packageDependencies": [
-            ["users", "workspace:users"],
-            ["@devops/deploy-cli", "workspace:devops/deploy-cli"],
-            ["shared", "workspace:shared"]
-          ],
-          "linkType": "SOFT",
         }]
       ]],
       ["v8-compile-cache", [

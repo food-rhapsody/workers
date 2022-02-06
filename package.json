@@ -6,10 +6,7 @@
     "url": "git@github.com:food-rhapsody/workers"
   },
   "workspaces": [
-    "users",
-    "challenges",
-    "place",
-    "shared",
+    "api",
     "devops/*"
   ],
   "scripts": {

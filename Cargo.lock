@@ -9,14 +9,31 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "94a45b455c14666b85fc40a019e8ab9eb75e3a124e05494f5397122bc9eb06e0"
 
 [[package]]
+name = "api"
+version = "0.0.0"
+dependencies = [
+  "async-trait",
+  "cfg-if 0.1.10",
+  "chrono",
+  "console_error_panic_hook",
+  "getrandom",
+  "jwt-compact",
+  "nanoid",
+  "serde",
+  "serde_json",
+  "thiserror",
+  "worker",
+]
+
+[[package]]
 name = "async-trait"
 version = "0.1.52"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "061a7acccaa286c011ddc30970520b98fa40e00c9d644633fb26b5fc63a265e3"
 dependencies = [
- "proc-macro2",
- "quote",
- "syn",
+  "proc-macro2",
+  "quote",
+  "syn",
 ]
 
 [[package]]
@@ -81,19 +98,6 @@ name = "cfg-if"
 version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "baf1de4339761588bc0619e3cbc0120ee582ebb74b53b4efbf79117bd2da40fd"
-
-[[package]]
-name = "challenges"
-version = "0.0.0"
-dependencies = [
- "cfg-if 0.1.10",
- "console_error_panic_hook",
- "getrandom",
- "serde",
- "serde_json",
- "shared",
- "worker",
-]
 
 [[package]]
 name = "chrono"
@@ -719,19 +723,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "place"
-version = "0.0.0"
-dependencies = [
- "cfg-if 0.1.10",
- "console_error_panic_hook",
- "getrandom",
- "serde",
- "serde_json",
- "shared",
- "worker",
-]
-
-[[package]]
 name = "ppv-lite86"
 version = "0.2.16"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -902,22 +893,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "shared"
-version = "0.0.0"
-dependencies = [
- "async-trait",
- "cfg-if 0.1.10",
- "chrono",
- "console_error_panic_hook",
- "jwt-compact",
- "nanoid",
- "serde",
- "serde_json",
- "thiserror",
- "worker",
-]
-
-[[package]]
 name = "signature"
 version = "1.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1081,19 +1056,6 @@ dependencies = [
  "idna",
  "matches",
  "percent-encoding",
-]
-
-[[package]]
-name = "users"
-version = "0.0.0"
-dependencies = [
- "cfg-if 0.1.10",
- "console_error_panic_hook",
- "getrandom",
- "serde",
- "serde_json",
- "shared",
- "worker",
 ]
 
 [[package]]
