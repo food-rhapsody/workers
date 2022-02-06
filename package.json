@@ -9,6 +9,7 @@
     "auth",
     "users",
     "challenges",
+    "place",
     "shared",
     "devops/*"
   ],

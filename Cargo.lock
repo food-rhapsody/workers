@@ -753,6 +753,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "place"
+version = "0.0.0"
+dependencies = [
+ "cfg-if 0.1.10",
+ "console_error_panic_hook",
+ "getrandom",
+ "serde",
+ "serde_json",
+ "shared",
+ "worker",
+]
+
+[[package]]
 name = "ppv-lite86"
 version = "0.2.16"
 source = "registry+https://github.com/rust-lang/crates.io-index"
