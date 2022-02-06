@@ -1,5 +1,5 @@
 name: configure
-description: 워크플로우 공통 설정
+description: Configure workflow common config
 runs:
   using: 'composite'
   steps:
@@ -8,7 +8,7 @@ runs:
         git config user.name "FoodRhapsody"
         git config user.email "foodrhapsodie@gmail.com"
       shell: bash
-    - name: "SINCE_FROM_REF 환경변수 설정"
+    - name: "set SINCE_FROM_REF environment"
       shell: bash
       run: |
         if [[ ${{ github.ref }} == 'refs/heads/main' ]]; then
