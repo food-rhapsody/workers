@@ -3,5 +3,6 @@ members = [
   "auth",
   "users",
   "challenges",
+  "place",
   "shared"
 ]

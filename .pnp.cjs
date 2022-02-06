@@ -35,6 +35,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:devops/deploy-cli"
       },
       {
+        "name": "place",
+        "reference": "workspace:place"
+      },
+      {
         "name": "shared",
         "reference": "workspace:shared"
       },
@@ -50,6 +54,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["auth", ["workspace:auth"]],
       ["challenges", ["workspace:challenges"]],
       ["food-rhapsody-workers", ["workspace:."]],
+      ["place", ["workspace:place"]],
       ["shared", ["workspace:shared"]],
       ["users", ["workspace:users"]]
     ],
@@ -2501,6 +2506,17 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["picomatch", "npm:2.3.1"]
           ],
           "linkType": "HARD",
+        }]
+      ]],
+      ["place", [
+        ["workspace:place", {
+          "packageLocation": "./place/",
+          "packageDependencies": [
+            ["place", "workspace:place"],
+            ["@devops/deploy-cli", "workspace:devops/deploy-cli"],
+            ["shared", "workspace:shared"]
+          ],
+          "linkType": "SOFT",
         }]
       ]],
       ["prelude-ls", [
