@@ -1,5 +1,5 @@
 {
-  "name": "@devops/deploy-cli",
+  "name": "@foodrhapsody-devops/deploy-cli",
   "private": true,
   "main": "dist/index.js",
   "module": "esm/index.js",

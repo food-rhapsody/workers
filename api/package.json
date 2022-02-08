@@ -7,6 +7,6 @@
     "test": "cargo test"
   },
   "devDependencies": {
-    "@devops/deploy-cli": "workspace:^"
+    "@foodrhapsody-devops/deploy-cli": "workspace:^"
   }
 }
