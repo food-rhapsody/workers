@@ -174,11 +174,6 @@ impl Users {
     }
 
     pub async fn create_new_user(&self, mut user: User) -> ApiResult<User> {
-        let email_duplicated = self.find_user_by_email(&user.email).await?;
-        if let Some(_) = email_duplicated {
-            return Err(ApiError::UserEmailDuplicated);
-        }
-
         let (refresh_id, refresh_token) = self.create_new_user_refresh_token()?;
         let access_token = self.create_new_user_access_token(&user.id)?;
 
@@ -243,11 +238,19 @@ pub struct CreateUserDto {
     pub oauth_provider: String,
 }
 
-pub async fn create_user(users: &Users, mut req: Request) -> ApiResult<User> {
+pub async fn create_or_update_user(users: &Users, mut req: Request) -> ApiResult<User> {
     let dto = req.parse_json::<CreateUserDto>().await?;
 
     let provider = OAuthProvider::from_str(&dto.oauth_provider)?;
-    provider.verify_token(&dto.oauth_token).await?;
+    provider.verify_token(&dto.oauth_token, &dto.email).await?;
+
+    let exists_user = users.find_user_by_email(&dto.email).await?;
+    if let Some(user) = exists_user {
+        let user = users.update_user_refresh_token(user).await?;
+        let user = users.update_user_access_token(user).await?;
+
+        return Ok(user);
+    }
 
     let user = users.create_new_user(User::new(&dto)).await?;
 
@@ -306,7 +309,7 @@ impl DurableObject for Users {
                 _ => Response::error("not found", 404),
             },
             Method::Post => match &path[..] {
-                "/users" => match create_user(self, req).await {
+                "/users" => match create_or_update_user(self, req).await {
                     Ok(user) => {
                         let body = json!({
                             "id": user.id,
