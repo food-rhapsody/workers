@@ -1,13 +1,21 @@
-use worker::{
-    Fetch, Headers, Method, Request, RequestInit, Response as WorkerResponse,
-    Result as WorkerResult,
-};
+use serde::{Deserialize, Serialize};
+use worker::{Fetch, Headers, Method, Request, RequestInit};
 
 use crate::api_error::ApiError;
 use crate::api_result::ApiResult;
 
 const KAKAO_PROVIDER_NAME: &str = "kakao";
 const KAKAO_USER_URL: &str = "https://kapi.kakao.com/v2/user/me";
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+struct KakaoUser {
+    pub kakao_account: KakaoAccount,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+struct KakaoAccount {
+    pub email: Option<String>,
+}
 
 #[derive(Debug, PartialEq)]
 pub enum OAuthProvider {
@@ -22,18 +30,17 @@ impl OAuthProvider {
         }
     }
 
-    // TODO: check email
-    pub async fn verify_token(&self, token: &str) -> ApiResult<()> {
-        match self.request_verify_token(token).await {
-            Ok(response) => match response.status_code() {
-                200 => Ok(()),
-                _ => Err(ApiError::InvalidOAuthToken),
-            },
-            Err(e) => Err(ApiError::WorkerError { source: e }),
+    pub async fn verify_token(&self, token: &str, email: &str) -> ApiResult<()> {
+        let oauth_email = self.fetch_email_with_token(token).await?;
+
+        if !email.eq(&oauth_email) {
+            return Err(ApiError::InvalidOAuthToken);
         }
+
+        Ok(())
     }
 
-    async fn request_verify_token(&self, token: &str) -> WorkerResult<WorkerResponse> {
+    async fn fetch_email_with_token(&self, token: &str) -> ApiResult<String> {
         match self {
             OAuthProvider::Kakao => {
                 let auth_header = format!("Bearer {}", token);
@@ -46,7 +53,18 @@ impl OAuthProvider {
 
                 let req = Request::new_with_init(KAKAO_USER_URL, &req_init)?;
 
-                Fetch::Request(req).send().await
+                match Fetch::Request(req).send().await {
+                    Ok(mut res) => match res.status_code() {
+                        200 => {
+                            let kakao_user = res.json::<KakaoUser>().await?;
+                            let kakao_account = kakao_user.kakao_account;
+
+                            Ok(kakao_account.email.unwrap_or("NO_EMAIL".to_owned()))
+                        }
+                        _ => Err(ApiError::InvalidOAuthToken),
+                    },
+                    Err(e) => Err(ApiError::WorkerError { source: e }),
+                }
             }
         }
     }

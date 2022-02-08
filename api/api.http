@@ -1,14 +1,14 @@
 ### GET /health
-GET http://localhost:4200/health
+GET {{ origin }}/health
 
 ### GET /version
-GET http://localhost:4200/version
+GET {{ origin }}/version
 
 ### GET /challenges
-GET http://localhost:4200/challenges
+GET {{ origin }}/challenges
 
 ### POST /challenges
-POST http://localhost:4200/challenges
+POST {{ origin }}/challenges
 Content-Type: application/json
 Authorization: Bearer ...
 
@@ -25,7 +25,7 @@ Authorization: Bearer ...
 }
 
 ### POST /users
-POST http://localhost:4200/users
+POST {{ origin }}/users
 Content-Type: application/json
 
 {
@@ -35,9 +35,12 @@ Content-Type: application/json
 }
 
 ### GET /me
-GET http://localhost:4200/me
+GET {{ origin }}/me
 Authorization: Bearer ...
 
 ### POST /me/token
-POST http://localhost:4200/me/token
+POST {{ origin }}/me/token
 Authorization: Bearer ...
+
+### POST /place/search
+POST {{ origin }}/place/search?query=키친마이야르

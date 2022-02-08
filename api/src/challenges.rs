@@ -163,8 +163,12 @@ impl DurableObject for Challenges {
                         let body = json!({
                             "challenges": challenges,
                         });
+                        let res = Response::from_json(&body)?;
+                        let mut res_headers = Headers::new();
+                        res_headers.append("cache-control", &format!("public, max-age={}", 60))?;
+                        res_headers.set("content-type", "application/json; charset=utf-8")?;
 
-                        Response::from_json(&body)
+                        Ok(res.with_headers(res_headers))
                     }
                     Err(e) => Ok(e.to_response()),
                 },
