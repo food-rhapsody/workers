@@ -27,14 +27,14 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:api"
       },
       {
-        "name": "@devops/deploy-cli",
+        "name": "@foodrhapsody-devops/deploy-cli",
         "reference": "workspace:devops/deploy-cli"
       }
     ],
     "enableTopLevelFallback": true,
     "ignorePatternData": "(^(?:\\.yarn\\/sdks(?:\\/(?!\\.{1,2}(?:\\/|$))(?:(?:(?!(?:^|\\/)\\.{1,2}(?:\\/|$)).)*?)|$))$)",
     "fallbackExclusionList": [
-      ["@devops/deploy-cli", ["workspace:devops/deploy-cli"]],
+      ["@foodrhapsody-devops/deploy-cli", ["workspace:devops/deploy-cli"]],
       ["@foodrhapsody/api", ["workspace:api"]],
       ["food-rhapsody-workers", ["workspace:."]]
     ],
@@ -81,25 +81,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD",
         }]
       ]],
-      ["@devops/deploy-cli", [
-        ["workspace:devops/deploy-cli", {
-          "packageLocation": "./devops/deploy-cli/",
-          "packageDependencies": [
-            ["@devops/deploy-cli", "workspace:devops/deploy-cli"],
-            ["@iarna/toml", "npm:2.2.5"],
-            ["@types/eslint", "npm:8.4.1"],
-            ["@types/node", "npm:17.0.13"],
-            ["clipanion", "virtual:fa9e2476e0b4c268f339928b17100aef70b54388b9a58a53284e50a73edbba9598314b889b309453f1b49eb22acda4caa615c58e653c2c9549e6e3e99c18e079#npm:3.2.0-rc.6"],
-            ["concurrently", "npm:7.0.0"],
-            ["eslint", "npm:8.8.0"],
-            ["execa", "npm:5.1.1"],
-            ["ts-node", "virtual:fa9e2476e0b4c268f339928b17100aef70b54388b9a58a53284e50a73edbba9598314b889b309453f1b49eb22acda4caa615c58e653c2c9549e6e3e99c18e079#npm:10.4.0"],
-            ["typanion", "npm:3.7.1"],
-            ["typescript", "patch:typescript@npm%3A4.5.5#~builtin<compat/typescript>::version=4.5.5&hash=493e53"]
-          ],
-          "linkType": "SOFT",
-        }]
-      ]],
       ["@eslint/eslintrc", [
         ["npm:1.0.5", {
           "packageLocation": "./.yarn/cache/@eslint-eslintrc-npm-1.0.5-bd5ac53f2a-b35b50d7b6.zip/node_modules/@eslint/eslintrc/",
@@ -118,12 +99,31 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD",
         }]
       ]],
+      ["@foodrhapsody-devops/deploy-cli", [
+        ["workspace:devops/deploy-cli", {
+          "packageLocation": "./devops/deploy-cli/",
+          "packageDependencies": [
+            ["@foodrhapsody-devops/deploy-cli", "workspace:devops/deploy-cli"],
+            ["@iarna/toml", "npm:2.2.5"],
+            ["@types/eslint", "npm:8.4.1"],
+            ["@types/node", "npm:17.0.13"],
+            ["clipanion", "virtual:a8273a0b4801ef54f3a27935e185a32887f26d4c7afb8797521cd1ad9d52b4ec5411475b052d18fdbcb393c21a5db75f7717f4b22234de0f4d34759892a1b49a#npm:3.2.0-rc.6"],
+            ["concurrently", "npm:7.0.0"],
+            ["eslint", "npm:8.8.0"],
+            ["execa", "npm:5.1.1"],
+            ["ts-node", "virtual:a8273a0b4801ef54f3a27935e185a32887f26d4c7afb8797521cd1ad9d52b4ec5411475b052d18fdbcb393c21a5db75f7717f4b22234de0f4d34759892a1b49a#npm:10.4.0"],
+            ["typanion", "npm:3.7.1"],
+            ["typescript", "patch:typescript@npm%3A4.5.5#~builtin<compat/typescript>::version=4.5.5&hash=493e53"]
+          ],
+          "linkType": "SOFT",
+        }]
+      ]],
       ["@foodrhapsody/api", [
         ["workspace:api", {
           "packageLocation": "./api/",
           "packageDependencies": [
             ["@foodrhapsody/api", "workspace:api"],
-            ["@devops/deploy-cli", "workspace:devops/deploy-cli"]
+            ["@foodrhapsody-devops/deploy-cli", "workspace:devops/deploy-cli"]
           ],
           "linkType": "SOFT",
         }]
@@ -764,10 +764,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],
           "linkType": "SOFT",
         }],
-        ["virtual:fa9e2476e0b4c268f339928b17100aef70b54388b9a58a53284e50a73edbba9598314b889b309453f1b49eb22acda4caa615c58e653c2c9549e6e3e99c18e079#npm:3.2.0-rc.6", {
-          "packageLocation": "./.yarn/__virtual__/clipanion-virtual-6c82414d30/0/cache/clipanion-npm-3.2.0-rc.6-5958504644-fc7d8563de.zip/node_modules/clipanion/",
+        ["virtual:a8273a0b4801ef54f3a27935e185a32887f26d4c7afb8797521cd1ad9d52b4ec5411475b052d18fdbcb393c21a5db75f7717f4b22234de0f4d34759892a1b49a#npm:3.2.0-rc.6", {
+          "packageLocation": "./.yarn/__virtual__/clipanion-virtual-4142cd385f/0/cache/clipanion-npm-3.2.0-rc.6-5958504644-fc7d8563de.zip/node_modules/clipanion/",
           "packageDependencies": [
-            ["clipanion", "virtual:fa9e2476e0b4c268f339928b17100aef70b54388b9a58a53284e50a73edbba9598314b889b309453f1b49eb22acda4caa615c58e653c2c9549e6e3e99c18e079#npm:3.2.0-rc.6"],
+            ["clipanion", "virtual:a8273a0b4801ef54f3a27935e185a32887f26d4c7afb8797521cd1ad9d52b4ec5411475b052d18fdbcb393c21a5db75f7717f4b22234de0f4d34759892a1b49a#npm:3.2.0-rc.6"],
             ["@types/typanion", null],
             ["typanion", "npm:3.7.1"]
           ],
@@ -2904,10 +2904,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],
           "linkType": "SOFT",
         }],
-        ["virtual:fa9e2476e0b4c268f339928b17100aef70b54388b9a58a53284e50a73edbba9598314b889b309453f1b49eb22acda4caa615c58e653c2c9549e6e3e99c18e079#npm:10.4.0", {
-          "packageLocation": "./.yarn/__virtual__/ts-node-virtual-cda61c0978/0/cache/ts-node-npm-10.4.0-04cb6e2279-3933ac0a93.zip/node_modules/ts-node/",
+        ["virtual:a8273a0b4801ef54f3a27935e185a32887f26d4c7afb8797521cd1ad9d52b4ec5411475b052d18fdbcb393c21a5db75f7717f4b22234de0f4d34759892a1b49a#npm:10.4.0", {
+          "packageLocation": "./.yarn/__virtual__/ts-node-virtual-b90792c334/0/cache/ts-node-npm-10.4.0-04cb6e2279-3933ac0a93.zip/node_modules/ts-node/",
           "packageDependencies": [
-            ["ts-node", "virtual:fa9e2476e0b4c268f339928b17100aef70b54388b9a58a53284e50a73edbba9598314b889b309453f1b49eb22acda4caa615c58e653c2c9549e6e3e99c18e079#npm:10.4.0"],
+            ["ts-node", "virtual:a8273a0b4801ef54f3a27935e185a32887f26d4c7afb8797521cd1ad9d52b4ec5411475b052d18fdbcb393c21a5db75f7717f4b22234de0f4d34759892a1b49a#npm:10.4.0"],
             ["@cspotcode/source-map-support", "npm:0.7.0"],
             ["@swc/core", null],
             ["@swc/wasm", null],
