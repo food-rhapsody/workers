@@ -1,6 +1,6 @@
 use std::str::FromStr;
 
-use worker::{console_log, Headers, Method, Request, RequestInit, Result as WorkerResult, Url};
+use worker::{Headers, Method, Request, RequestInit, Result as WorkerResult, Url};
 
 use crate::api_error::ApiError;
 use crate::api_result::ApiResult;
