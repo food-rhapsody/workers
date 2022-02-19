@@ -7,13 +7,14 @@ kv_namespaces = [
 ]
 durable_objects.bindings = [
   { name = "USERS", class_name = "Users" },
-  { name = "CHALLENGES", class_name = "Challenges" }
+  { name = "CHALLENGES", class_name = "Challenges" },
+  { name = "FOODNOTES", class_name = "Foodnotes" },
 ]
 vars = { VERSION = "unknown", ENV = "local" }
 
 [[migrations]]
 tag = "v0"
-new_classes = ["Users", "Challenges"]
+new_classes = ["Users", "Challenges", "Foodnotes"]
 
 [build]
 command = "cargo install -q worker-build && worker-build --release" # required
@@ -34,4 +35,5 @@ kv_namespaces = [
 durable_objects.bindings = [
   { name = "USERS", class_name = "Users" },
   { name = "CHALLENGES", class_name = "Challenges" },
+  { name = "FOODNOTES", class_name = "Foodnotes" },
 ]

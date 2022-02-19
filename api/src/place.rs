@@ -3,6 +3,7 @@ use worker::{Fetch, Headers, Method, Request, RequestInit, Response, RouteContex
 
 use crate::api_error::ApiError;
 use crate::api_result::ApiResult;
+use crate::res::response_with_cache;
 
 const KAKAO_MAP_API: &str = "https://dapi.kakao.com/v2/local/search/keyword.json";
 
@@ -60,12 +61,7 @@ pub async fn search_place(req: Request, ctx: RouteContext<()>) -> ApiResult<Resp
                     let result = res.json::<PlaceSearchResult>().await?;
                     cache.put(&query, &result)?.expiration_ttl(60 * 60 * 24 * 30).execute().await?;
 
-                    let new_res = Response::from_json(&result)?;
-                    let mut new_res_headers = Headers::new();
-                    new_res_headers.append("cache-control", &format!("public, max-age={}", 60 * 60 * 24))?;
-                    new_res_headers.set("content-type", "application/json; charset=utf-8")?;
-
-                    Ok(new_res.with_headers(new_res_headers))
+                    Ok(response_with_cache(&result, 60 * 60 * 24)?)
                 },
                 _ => Ok(res)
             }

@@ -4,7 +4,9 @@ use worker::*;
 
 use crate::api_error::ApiError;
 use crate::api_result::ApiResult;
+use crate::durable::DurableStorageFind;
 use crate::req::ParseReqJson;
+use crate::res::{response, response_with_cache};
 use crate::uid;
 
 const ID_PREFIX: &str = "id_";
@@ -75,27 +77,15 @@ pub struct Challenges {
 }
 
 impl Challenges {
-    async fn find<T: for<'a> Deserialize<'a>>(&self, key: &str) -> ApiResult<Option<T>> {
-        let data = self.state.storage().get::<T>(key).await;
-
-        match data {
-            Ok(x) => Ok(Some(x)),
-            Err(e) => match e {
-                Error::JsError(msg) => match &msg[..] {
-                    "No such value in storage." => Ok(None),
-                    _ => Err(ApiError::ServerError("storage error".to_string())),
-                },
-                _ => Err(ApiError::WorkerError { source: e }),
-            },
-        }
+    pub async fn find_by_id(&self, id: &str) -> ApiResult<Option<Challenge>> {
+        self.state
+            .storage()
+            .find::<Challenge>(&challenge_id_key(id))
+            .await
     }
 
-    pub async fn find_challenge_by_id(&self, id: &str) -> ApiResult<Option<Challenge>> {
-        self.find::<Challenge>(&challenge_id_key(id)).await
-    }
-
-    pub async fn get_challenge_by_id(&self, id: &str) -> ApiResult<Challenge> {
-        let challenge = self.find_challenge_by_id(id).await?;
+    pub async fn get_by_id(&self, id: &str) -> ApiResult<Challenge> {
+        let challenge = self.find_by_id(id).await?;
 
         match challenge {
             Some(x) => Ok(x),
@@ -103,7 +93,7 @@ impl Challenges {
         }
     }
 
-    pub async fn list_challenges(&self) -> ApiResult<Vec<Challenge>> {
+    pub async fn list(&self) -> ApiResult<Vec<Challenge>> {
         let storage = self.state.storage();
         let mut challenges = Vec::<Challenge>::new();
 
@@ -117,7 +107,7 @@ impl Challenges {
         Ok(challenges.to_owned())
     }
 
-    pub async fn update_challenge(&self, challenge: &Challenge) -> ApiResult<()> {
+    pub async fn update(&self, challenge: &Challenge) -> ApiResult<()> {
         self.state
             .storage()
             .put(&challenge.id_key(), &challenge)
@@ -131,17 +121,17 @@ pub async fn create_challenge(challenges: &Challenges, mut req: Request) -> ApiR
     let dto = req.parse_json::<CreateChallengeDto>().await?;
     let challenge = Challenge::new(&dto);
 
-    challenges.update_challenge(&challenge).await?;
+    challenges.update(&challenge).await?;
 
     Ok(challenge)
 }
 
 pub async fn update_challenge(challenges: &Challenges, mut req: Request) -> ApiResult<Challenge> {
     let dto = req.parse_json::<UpdateChallengeDto>().await?;
-    let mut challenge = challenges.get_challenge_by_id(&dto.id).await?;
+    let mut challenge = challenges.get_by_id(&dto.id).await?;
     challenge.update(&dto);
 
-    challenges.update_challenge(&challenge).await?;
+    challenges.update(&challenge).await?;
 
     Ok(challenge)
 }
@@ -156,39 +146,30 @@ impl DurableObject for Challenges {
         let method = req.method();
         let path = req.path();
 
-        match method {
-            Method::Get => match &path[..] {
-                "/challenges" => match self.list_challenges().await {
-                    Ok(challenges) => {
-                        let body = json!({
-                            "challenges": challenges,
-                        });
-                        let res = Response::from_json(&body)?;
-                        let mut res_headers = Headers::new();
-                        res_headers.append("cache-control", &format!("public, max-age={}", 60))?;
-                        res_headers.set("content-type", "application/json; charset=utf-8")?;
-
-                        Ok(res.with_headers(res_headers))
-                    }
-                    Err(e) => Ok(e.to_response()),
-                },
-                _ => Response::error("not found", 404),
-            },
-            Method::Post => match &path[..] {
-                "/challenges" => match create_challenge(self, req).await {
-                    Ok(challenge) => Response::from_json(&challenge),
-                    Err(e) => Ok(e.to_response()),
-                },
-                _ => Response::error("not found", 404),
-            },
-            Method::Put => match &path[..] {
-                "/challenges" => match update_challenge(self, req).await {
-                    Ok(challenge) => Response::from_json(&challenge),
-                    Err(e) => Ok(e.to_response()),
-                },
-                _ => Response::error("not found", 404),
-            },
-            _ => Response::error("not found", 404),
+        // GET /challenges
+        if method == Method::Get && &path == "/challenges" {
+            return match self.list().await {
+                Ok(challenges) => response_with_cache(&json!({ "challenges": challenges }), 60),
+                Err(e) => Ok(e.to_response()),
+            };
         }
+
+        // POST /challenges
+        if method == Method::Post && &path == "/challenges" {
+            return match create_challenge(self, req).await {
+                Ok(challenge) => response(&challenge),
+                Err(e) => Ok(e.to_response()),
+            };
+        }
+
+        // PUT /challenges
+        if method == Method::Put && &path == "/challenges" {
+            return match update_challenge(self, req).await {
+                Ok(challenge) => response(&challenge),
+                Err(e) => Ok(e.to_response()),
+            };
+        }
+
+        Response::error("not found", 404)
     }
 }

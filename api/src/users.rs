@@ -6,9 +6,11 @@ use worker::*;
 use crate::api_error::ApiError;
 use crate::api_result::ApiResult;
 use crate::auth::{authorize_access_token, authorize_refresh_token};
+use crate::durable::DurableStorageFind;
 use crate::jwt::Jwt;
 use crate::oauth::OAuthProvider;
 use crate::req::ParseReqJson;
+use crate::res::response;
 use crate::uid;
 
 const ADMIN_EMAILS: [&str; 1] = ["seokju.me@kakao.com"];
@@ -27,6 +29,19 @@ pub struct User {
     pub email: String,
     pub name: Option<String>,
     pub oauth_provider: String,
+    pub access_token: Option<String>,
+    pub refresh_token: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct UserInfoDto {
+    pub id: String,
+    pub email: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct UserTokenDto {
+    pub id: String,
     pub access_token: Option<String>,
     pub refresh_token: Option<String>,
 }
@@ -68,6 +83,21 @@ impl User {
 
         self
     }
+
+    pub fn to_info_dto(&self) -> UserInfoDto {
+        UserInfoDto {
+            id: self.id.to_owned(),
+            email: self.email.to_owned(),
+        }
+    }
+
+    pub fn to_token_dto(&self) -> UserTokenDto {
+        UserTokenDto {
+            id: self.id.to_owned(),
+            access_token: self.access_token.clone(),
+            refresh_token: self.refresh_token.clone(),
+        }
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -97,21 +127,6 @@ pub struct Users {
 }
 
 impl Users {
-    async fn find<T: for<'a> Deserialize<'a>>(&self, key: &str) -> ApiResult<Option<T>> {
-        let data = self.state.storage().get::<T>(key).await;
-
-        match data {
-            Ok(x) => Ok(Some(x)),
-            Err(e) => match e {
-                Error::JsError(msg) => match &msg[..] {
-                    "No such value in storage." => Ok(None),
-                    _ => Err(ApiError::ServerError("storage error".to_string())),
-                },
-                _ => Err(ApiError::WorkerError { source: e }),
-            },
-        }
-    }
-
     pub fn get_jwt_for_access_token(&self) -> ApiResult<Jwt> {
         let jwt_secret = self.env.secret("JWT_SECRET")?;
 
@@ -124,30 +139,37 @@ impl Users {
         Ok(Jwt::new(&jwt_secret.to_string()))
     }
 
-    pub async fn find_user_by_id(&self, user_id: &str) -> ApiResult<Option<User>> {
-        self.find::<User>(&user_id_key(user_id)).await
+    pub async fn find_by_id(&self, user_id: &str) -> ApiResult<Option<User>> {
+        self.state
+            .storage()
+            .find::<User>(&user_id_key(user_id))
+            .await
     }
 
-    pub async fn find_user_by_email(&self, email: &str) -> ApiResult<Option<User>> {
-        let user_id = self.find::<String>(&user_email_key(email)).await?;
+    pub async fn find_by_email(&self, email: &str) -> ApiResult<Option<User>> {
+        let user_id = self
+            .state
+            .storage()
+            .find::<String>(&user_email_key(email))
+            .await?;
 
         match user_id {
-            Some(x) => self.find_user_by_id(&x).await,
+            Some(x) => self.find_by_id(&x).await,
             None => Ok(None),
         }
     }
 
-    pub async fn find_user_by_refresh_id(&self, refresh_id: &str) -> ApiResult<Option<User>> {
-        let user_id = self.find::<String>(&refresh_id).await?;
+    pub async fn find_by_refresh_id(&self, refresh_id: &str) -> ApiResult<Option<User>> {
+        let user_id = self.state.storage().find::<String>(&refresh_id).await?;
 
         match user_id {
-            Some(x) => self.find_user_by_id(&x).await,
+            Some(x) => self.find_by_id(&x).await,
             None => Ok(None),
         }
     }
 
-    pub async fn get_user_by_id(&self, user_id: &str) -> ApiResult<User> {
-        let user = self.find_user_by_id(user_id).await?;
+    pub async fn get_by_id(&self, user_id: &str) -> ApiResult<User> {
+        let user = self.find_by_id(user_id).await?;
 
         match user {
             Some(x) => Ok(x),
@@ -155,8 +177,8 @@ impl Users {
         }
     }
 
-    pub async fn get_user_by_email(&self, email: &str) -> ApiResult<User> {
-        let user = self.find_user_by_email(email).await?;
+    pub async fn get_by_email(&self, email: &str) -> ApiResult<User> {
+        let user = self.find_by_email(email).await?;
 
         match user {
             Some(x) => Ok(x),
@@ -165,7 +187,7 @@ impl Users {
     }
 
     pub async fn get_user_by_refresh_id(&self, refresh_id: &str) -> ApiResult<User> {
-        let user = self.find_user_by_refresh_id(refresh_id).await?;
+        let user = self.find_by_refresh_id(refresh_id).await?;
 
         match user {
             Some(x) => Ok(x),
@@ -173,9 +195,9 @@ impl Users {
         }
     }
 
-    pub async fn create_new_user(&self, mut user: User) -> ApiResult<User> {
-        let (refresh_id, refresh_token) = self.create_new_user_refresh_token()?;
-        let access_token = self.create_new_user_access_token(&user.id)?;
+    pub async fn create(&self, mut user: User) -> ApiResult<User> {
+        let (refresh_id, refresh_token) = self.create_refresh_token()?;
+        let access_token = self.create_user_access_token(&user.id)?;
 
         user.with_refresh_token(&refresh_token)
             .with_access_token(&access_token);
@@ -189,7 +211,26 @@ impl Users {
         Ok(user)
     }
 
-    pub fn create_new_user_refresh_token(&self) -> ApiResult<(String, String)> {
+    pub async fn update_refresh_token(&self, mut user: User) -> ApiResult<User> {
+        let (refresh_id, refresh_token) = self.create_refresh_token()?;
+
+        user.with_refresh_token(&refresh_token);
+        self.state.storage().put(&refresh_id, &user.id).await?;
+        self.state.storage().put(&user.id_key(), &user).await?;
+
+        Ok(user)
+    }
+
+    pub async fn update_access_token(&self, mut user: User) -> ApiResult<User> {
+        let access_token = self.create_user_access_token(&user.id)?;
+
+        user.with_access_token(&access_token);
+        self.state.storage().put(&user.id_key(), &user).await?;
+
+        Ok(user)
+    }
+
+    fn create_refresh_token(&self) -> ApiResult<(String, String)> {
         let jwt = self.get_jwt_for_refresh_token()?;
         let refresh_id = uid!();
 
@@ -200,7 +241,7 @@ impl Users {
         Ok((refresh_id, refresh_token))
     }
 
-    pub fn create_new_user_access_token(&self, user_id: &str) -> ApiResult<String> {
+    fn create_user_access_token(&self, user_id: &str) -> ApiResult<String> {
         let jwt = self.get_jwt_for_access_token()?;
 
         let user_claims = UserClaims::for_access_token(&user_id);
@@ -208,25 +249,6 @@ impl Users {
         let access_token = jwt.sign(&claims)?;
 
         Ok(access_token)
-    }
-
-    pub async fn update_user_refresh_token(&self, mut user: User) -> ApiResult<User> {
-        let (refresh_id, refresh_token) = self.create_new_user_refresh_token()?;
-
-        user.with_refresh_token(&refresh_token);
-        self.state.storage().put(&refresh_id, &user.id).await?;
-        self.state.storage().put(&user.id_key(), &user).await?;
-
-        Ok(user)
-    }
-
-    pub async fn update_user_access_token(&self, mut user: User) -> ApiResult<User> {
-        let access_token = self.create_new_user_access_token(&user.id)?;
-
-        user.with_access_token(&access_token);
-        self.state.storage().put(&user.id_key(), &user).await?;
-
-        Ok(user)
     }
 }
 
@@ -244,15 +266,15 @@ pub async fn create_or_update_user(users: &Users, mut req: Request) -> ApiResult
     let provider = OAuthProvider::from_str(&dto.oauth_provider)?;
     provider.verify_token(&dto.oauth_token, &dto.email).await?;
 
-    let exists_user = users.find_user_by_email(&dto.email).await?;
+    let exists_user = users.find_by_email(&dto.email).await?;
     if let Some(user) = exists_user {
-        let user = users.update_user_refresh_token(user).await?;
-        let user = users.update_user_access_token(user).await?;
+        let user = users.update_refresh_token(user).await?;
+        let user = users.update_access_token(user).await?;
 
         return Ok(user);
     }
 
-    let user = users.create_new_user(User::new(&dto)).await?;
+    let user = users.create(User::new(&dto)).await?;
 
     Ok(user)
 }
@@ -267,8 +289,8 @@ pub async fn update_my_token(users: &Users, req: Request) -> ApiResult<User> {
     let user = authorize_refresh_token(&users, req).await?;
 
     // TODO(@seokju-na): Renew only when refresh_token expires less than 1 month
-    let user = users.update_user_refresh_token(user).await?;
-    let user = users.update_user_access_token(user).await?;
+    let user = users.update_refresh_token(user).await?;
+    let user = users.update_access_token(user).await?;
 
     Ok(user)
 }
@@ -283,60 +305,42 @@ impl DurableObject for Users {
         let method = req.method();
         let path = req.path();
 
-        match method {
-            Method::Get => match &path[..] {
-                "/me" => match recognize_me(self, req).await {
-                    Ok(user) => {
-                        let body = json!({
-                            "id": user.id,
-                            "email": user.email
-                        });
-
-                        Response::from_json(&body)
-                    }
-                    Err(e) => Ok(e.to_response()),
-                },
-                "/me/admin" => match recognize_me(self, req).await {
-                    Ok(user) => match user.is_admin() {
-                        true => Response::from_json(&json!({
-                            "id": user.id,
-                            "email": user.email,
-                        })),
-                        false => Ok(ApiError::Unauthorized.to_response()),
-                    },
-                    Err(e) => Ok(e.to_response()),
-                },
-                _ => Response::error("not found", 404),
-            },
-            Method::Post => match &path[..] {
-                "/users" => match create_or_update_user(self, req).await {
-                    Ok(user) => {
-                        let body = json!({
-                            "id": user.id,
-                            "refreshToken": user.refresh_token,
-                            "accessToken": user.access_token,
-                        });
-
-                        Response::from_json(&body)
-                    }
-                    Err(e) => Ok(e.to_response()),
-                },
-                "/me/token" => match update_my_token(self, req).await {
-                    Ok(user) => {
-                        let body = json!({
-                            "id": user.id,
-                            "refreshToken": user.refresh_token,
-                            "accessToken": user.access_token,
-                        });
-
-                        Response::from_json(&body)
-                    }
-                    Err(e) => Ok(e.to_response()),
-                },
-                _ => Response::error("not found", 404),
-            },
-            _ => Response::error("not found", 404),
+        // GET /me
+        if method == Method::Get && &path == "/me" {
+            return match recognize_me(self, req).await {
+                Ok(user) => response(&json!(user.to_info_dto())),
+                Err(e) => Ok(e.to_response()),
+            };
         }
+
+        // GET /me/admin
+        if method == Method::Get && &path == "/me/admin" {
+            return match recognize_me(self, req).await {
+                Ok(user) => match user.is_admin() {
+                    true => response(&json!(user.to_info_dto())),
+                    false => Ok(ApiError::Unauthorized.to_response()),
+                },
+                Err(e) => Ok(e.to_response()),
+            };
+        }
+
+        // POST /users
+        if method == Method::Post && &path == "/users" {
+            return match create_or_update_user(self, req).await {
+                Ok(user) => response(&json!(user.to_token_dto())),
+                Err(e) => Ok(e.to_response()),
+            };
+        }
+
+        // POST /me/token
+        if method == Method::Post && &path == "/me/token" {
+            return match update_my_token(self, req).await {
+                Ok(user) => response(&json!(user.to_token_dto())),
+                Err(e) => Ok(e.to_response()),
+            };
+        }
+
+        Response::error("not found", 404)
     }
 }
 
