@@ -17,7 +17,7 @@ pub async fn authorize_access_token(users: &Users, req: Request) -> ApiResult<Us
     }
 
     let user = users
-        .get_user_by_id(&token.unwrap().claims().custom.subject)
+        .get_by_id(&token.unwrap().claims().custom.subject)
         .await;
     if let Err(_) = user {
         return Err(ApiError::Unauthorized);
@@ -60,7 +60,15 @@ pub async fn authorize_refresh_token(users: &Users, req: Request) -> ApiResult<U
     }
 }
 
+pub fn build_auth_req(req: &Request) -> WorkerResult<Request> {
+    build_auth_req_with_path(req, "/me")
+}
+
 pub fn build_admin_auth_req(req: &Request) -> WorkerResult<Request> {
+    build_auth_req_with_path(req, "/me/admin")
+}
+
+fn build_auth_req_with_path(req: &Request, path: &str) -> WorkerResult<Request> {
     let auth = req.headers().get("Authorization")?.unwrap_or("".to_owned());
     let mut headers = Headers::new();
     headers.append("Authorization", &auth)?;
@@ -69,11 +77,11 @@ pub fn build_admin_auth_req(req: &Request) -> WorkerResult<Request> {
     init.with_headers(headers).with_method(Method::Get);
 
     let mut url = Url::from_str(req.url()?.as_str())?;
-    url.set_path("/me/admin");
+    url.set_path(path);
 
-    let admin_auth_req = Request::new_with_init(url.as_str(), &init)?;
+    let auth_req = Request::new_with_init(url.as_str(), &init)?;
 
-    Ok(admin_auth_req)
+    Ok(auth_req)
 }
 
 fn get_auth_token_from_header(header: &str) -> ApiResult<String> {
