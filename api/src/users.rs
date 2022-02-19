@@ -10,6 +10,7 @@ use crate::durable::DurableStorageFind;
 use crate::jwt::Jwt;
 use crate::oauth::OAuthProvider;
 use crate::req::ParseReqJson;
+use crate::res::response;
 use crate::uid;
 
 const ADMIN_EMAILS: [&str; 1] = ["seokju.me@kakao.com"];
@@ -139,11 +140,18 @@ impl Users {
     }
 
     pub async fn find_by_id(&self, user_id: &str) -> ApiResult<Option<User>> {
-        self.state.storage().find::<User>(&user_id_key(user_id)).await
+        self.state
+            .storage()
+            .find::<User>(&user_id_key(user_id))
+            .await
     }
 
     pub async fn find_by_email(&self, email: &str) -> ApiResult<Option<User>> {
-        let user_id = self.state.storage().find::<String>(&user_email_key(email)).await?;
+        let user_id = self
+            .state
+            .storage()
+            .find::<String>(&user_email_key(email))
+            .await?;
 
         match user_id {
             Some(x) => self.find_by_id(&x).await,
@@ -300,7 +308,7 @@ impl DurableObject for Users {
         // GET /me
         if method == Method::Get && &path == "/me" {
             return match recognize_me(self, req).await {
-                Ok(user) => Response::from_json(&json!(user.to_info_dto())),
+                Ok(user) => response(&json!(user.to_info_dto())),
                 Err(e) => Ok(e.to_response()),
             };
         }
@@ -309,7 +317,7 @@ impl DurableObject for Users {
         if method == Method::Get && &path == "/me/admin" {
             return match recognize_me(self, req).await {
                 Ok(user) => match user.is_admin() {
-                    true => Response::from_json(&json!(user.to_info_dto())),
+                    true => response(&json!(user.to_info_dto())),
                     false => Ok(ApiError::Unauthorized.to_response()),
                 },
                 Err(e) => Ok(e.to_response()),
@@ -319,7 +327,7 @@ impl DurableObject for Users {
         // POST /users
         if method == Method::Post && &path == "/users" {
             return match create_or_update_user(self, req).await {
-                Ok(user) => Response::from_json(&json!(user.to_token_dto())),
+                Ok(user) => response(&json!(user.to_token_dto())),
                 Err(e) => Ok(e.to_response()),
             };
         }
@@ -327,7 +335,7 @@ impl DurableObject for Users {
         // POST /me/token
         if method == Method::Post && &path == "/me/token" {
             return match update_my_token(self, req).await {
-                Ok(user) => Response::from_json(&json!(user.to_token_dto())),
+                Ok(user) => response(&json!(user.to_token_dto())),
                 Err(e) => Ok(e.to_response()),
             };
         }
