@@ -13,9 +13,9 @@ pub trait ParseReqJson {
 #[async_trait(?Send)]
 impl ParseReqJson for Request {
     async fn parse_json<B: DeserializeOwned>(&mut self) -> ApiResult<B> {
-        let data = self.json::<B>().await;
+        let body = self.json::<B>().await;
 
-        match data {
+        match body {
             Ok(x) => Ok(x),
             Err(_) => Err(ApiError::BadRequest("invalid request fields".to_string())),
         }
