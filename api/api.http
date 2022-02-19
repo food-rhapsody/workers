@@ -10,7 +10,7 @@ GET {{ origin }}/challenges
 ### POST /challenges
 POST {{ origin }}/challenges
 Content-Type: application/json
-Authorization: Bearer ...
+Authorization: Bearer {{ access_token }}
 
 {
   "name": "한우",
@@ -36,11 +36,42 @@ Content-Type: application/json
 
 ### GET /me
 GET {{ origin }}/me
-Authorization: Bearer ...
+Authorization: Bearer {{ access_token }}
 
 ### POST /me/token
 POST {{ origin }}/me/token
-Authorization: Bearer ...
+Authorization: Bearer {{ access_token }}
 
 ### POST /place/search
 POST {{ origin }}/place/search?query=키친마이야르
+
+### GET /foodnotes
+GET {{ origin }}/foodnotes
+Authorization: Bearer {{ access_token }}
+
+### POST /foodnotes
+POST {{ origin }}/foodnotes
+Content-Type: application/json
+Authorization: Bearer {{ access_token }}
+
+{
+  "stamp_id": "ribeye_roll",
+  "author_id": "9VXFDl46hEG6PzFpiOpdP",
+  "text": "와! 정말 맛있어요.",
+  "place": {
+    "id": "234127678",
+    "place_name": "키친마이야르",
+    "category_name": "음식점 > 양식",
+    "category_group_code": "FD6",
+    "category_group_name": "음식점",
+    "phone": "02-511-7002",
+    "address_name": "서울 강남구 신사동 644-6",
+    "road_address_name": "서울 강남구 언주로170길 22",
+    "x": "127.035423195622",
+    "y": "37.5266092359544",
+    "place_url": "http://place.map.kakao.com/234127678",
+    "distance": ""
+  },
+  "img_urls": [],
+  "is_public": false
+}
