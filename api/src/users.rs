@@ -297,34 +297,42 @@ impl DurableObject for Users {
         let method = req.method();
         let path = req.path();
 
-        match method {
-            Method::Get => match &path[..] {
-                "/me" => match recognize_me(self, req).await {
-                    Ok(user) => Response::from_json(&json!(user.to_info_dto())),
-                    Err(e) => Ok(e.to_response()),
-                },
-                "/me/admin" => match recognize_me(self, req).await {
-                    Ok(user) => match user.is_admin() {
-                        true => Response::from_json(&json!(user.to_info_dto())),
-                        false => Ok(ApiError::Unauthorized.to_response()),
-                    },
-                    Err(e) => Ok(e.to_response()),
-                },
-                _ => Response::error("not found", 404),
-            },
-            Method::Post => match &path[..] {
-                "/users" => match create_or_update_user(self, req).await {
-                    Ok(user) => Response::from_json(&json!(user.to_token_dto())),
-                    Err(e) => Ok(e.to_response()),
-                },
-                "/me/token" => match update_my_token(self, req).await {
-                    Ok(user) => Response::from_json(&json!(user.to_token_dto())),
-                    Err(e) => Ok(e.to_response()),
-                },
-                _ => Response::error("not found", 404),
-            },
-            _ => Response::error("not found", 404),
+        // GET /me
+        if method == Method::Get && &path == "/me" {
+            return match recognize_me(self, req).await {
+                Ok(user) => Response::from_json(&json!(user.to_info_dto())),
+                Err(e) => Ok(e.to_response()),
+            };
         }
+
+        // GET /me/admin
+        if method == Method::Get && &path == "/me/admin" {
+            return match recognize_me(self, req).await {
+                Ok(user) => match user.is_admin() {
+                    true => Response::from_json(&json!(user.to_info_dto())),
+                    false => Ok(ApiError::Unauthorized.to_response()),
+                },
+                Err(e) => Ok(e.to_response()),
+            };
+        }
+
+        // POST /users
+        if method == Method::Post && &path == "/users" {
+            return match create_or_update_user(self, req).await {
+                Ok(user) => Response::from_json(&json!(user.to_token_dto())),
+                Err(e) => Ok(e.to_response()),
+            };
+        }
+
+        // POST /me/token
+        if method == Method::Post && &path == "/me/token" {
+            return match update_my_token(self, req).await {
+                Ok(user) => Response::from_json(&json!(user.to_token_dto())),
+                Err(e) => Ok(e.to_response()),
+            };
+        }
+
+        Response::error("not found", 404)
     }
 }
 
